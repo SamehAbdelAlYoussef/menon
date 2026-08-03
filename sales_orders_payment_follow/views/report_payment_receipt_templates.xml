@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_payment_receipt_document_sp" inherit_id="account.report_payment_receipt_document">
+		<xpath expr="//t/div[@class='page']/h3" position="after">
+			<!--<t t-if="o.sale_order_id">
+				<h3>
+					<strong>Order ID: 
+						<span t-field="o.sale_order_id.name"/>
+					</strong>
+				</h3>
+			</t>-->
+            <h3 invisible="not sale_order_id">
+                <strong>
+                    Order ID:
+                    <field name="sale_order_id" readonly="1"/>
+                </strong>
+            </h3>
+
+		</xpath>
+	</template>
+</odoo>
