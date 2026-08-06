@@ -2,13 +2,14 @@
     'name': 'MS Sale Order Remote Sync',
     'version': '18.0.1.0.0',
     'category': 'Sales',
-    'summary': 'Sync Sale Orders to remote Odoo server via JSON-RPC',
+    'summary': 'Sync Sale Orders & Payments to remote Odoo server via JSON-RPC',
     'description': """
-        Real-time sync of Sale Orders (create/write/delete) to a remote Odoo server.
-        Uses JSON-RPC API. Auto-searches partners & products on remote, creates if missing.
+        Real-time sync of Sale Orders and Account Payments (create/write/delete)
+        to a remote Odoo server. Uses JSON-RPC API.
+        Auto-searches partners, products & journals on remote, creates if missing.
     """,
     'author': 'MS',
-    'depends': ['sale_management'],
+    'depends': ['sale_management', 'account'],
     'data': [
         'security/ir.model.access.csv',
         'views/remote_sync_config_views.xml',

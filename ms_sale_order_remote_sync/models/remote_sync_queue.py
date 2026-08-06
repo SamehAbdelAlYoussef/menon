@@ -6,6 +6,12 @@ from odoo import models, fields, api, _
 
 _logger = logging.getLogger(__name__)
 
+# Map model name → remote model name (usually same, but can differ)
+MODEL_MAP = {
+    'sale.order': 'sale.order',
+    'account.payment': 'account.payment',
+}
+
 
 class RemoteSyncQueue(models.Model):
     _name = 'remote.sync.queue'
@@ -47,12 +53,10 @@ class RemoteSyncQueue(models.Model):
             [('state', 'in', ('pending', 'failed'))],
             limit=limit, order='create_date asc',
         )
-        # Filter in Python: Odoo domains don't support field-vs-field comparison
         items = items.filtered(lambda r: r.retry_count < r.max_retries)
         if not items:
             return True
 
-        # Mark as processing
         items.write({'state': 'processing'})
 
         for item in items:
@@ -66,20 +70,29 @@ class RemoteSyncQueue(models.Model):
                     'retry_count': item.retry_count + 1,
                 })
 
+        # Clean up successful (done) records — keep failed for debugging
+        self._cleanup_done()
         return True
 
+    def _cleanup_done(self):
+        """Delete all successfully processed (done) queue records."""
+        done = self.search([('state', '=', 'done')])
+        if done:
+            count = len(done)
+            done.unlink()
+            _logger.info("Remote Sync Queue: cleaned up %s done record(s)", count)
+
     # ------------------------------------------------------------------
-    # Dispatch to the correct sync handler
+    # Dispatch — generic, routes by item.model
     # ------------------------------------------------------------------
 
     def _process_item(self, item, config):
-        """Route a queue item to its sync method."""
+        """Route a queue item to its model's sync handler."""
         if item.operation == 'unlink':
-            # Record is already deleted locally — use mapping table directly
             success = self._process_unlink(item, config)
         else:
-            SaleOrder = self.env['sale.order'].with_context(skip_remote_sync=True)
-            record = SaleOrder.browse(item.local_id)
+            model_name = item.model
+            record = self.env[model_name].with_context(skip_remote_sync=True).browse(item.local_id)
 
             if not record.exists():
                 _logger.warning("Remote Sync Queue: record %s/%s no longer exists",
@@ -106,35 +119,57 @@ class RemoteSyncQueue(models.Model):
             })
 
     # ------------------------------------------------------------------
-    # Unlink handler (record is already gone, use mapping table)
+    # Unlink handler — generic (record is already gone, use mapping table)
     # ------------------------------------------------------------------
 
     def _process_unlink(self, item, config):
-        """Delete the remote order using the mapping table to find remote_id."""
+        """Delete the remote record using the mapping table to find remote_id."""
+        remote_model = MODEL_MAP.get(item.model, item.model)
         remote_id = self.env['remote.sync.mapping'].get_remote_id(item.model, item.local_id)
         if not remote_id:
-            # Not on remote, nothing to do — mark done
-            return True
+            return True  # Not on remote, nothing to do
 
-        result = config._call_kw('sale.order', 'unlink', args=[[remote_id]])
+        result = config._call_kw(remote_model, 'unlink', args=[[remote_id]])
         if result:
-            # Clean up the local→remote mapping for this deleted order
+            # Clean up mapping
             mapping = self.env['remote.sync.mapping'].search([
                 ('model', '=', item.model), ('local_id', '=', item.local_id),
             ])
             mapping.unlink()
-            _logger.info("Remote Sync Queue: DELETED remote sale.order #%s", remote_id)
+            _logger.info("Remote Sync Queue: DELETED remote %s #%s", remote_model, remote_id)
             return True
-        _logger.error("Remote Sync Queue: FAILED to delete remote sale.order #%s", remote_id)
+        _logger.error("Remote Sync Queue: FAILED to delete remote %s #%s", remote_model, remote_id)
         return False
 
     # ------------------------------------------------------------------
-    # Enqueue helpers — called by sale.order hooks
+    # Enqueue helpers
     # ------------------------------------------------------------------
 
     @api.model
+    def enqueue(self, model, local_id, operation, vals=None):
+        """Generic enqueue: schedule any model's sync operation."""
+        values_json = None
+        if vals:
+            # Convert recordset values to ids for JSON serialization
+            clean = {}
+            for k, v in vals.items():
+                if hasattr(v, 'id'):
+                    clean[k] = v.id
+                elif isinstance(v, list) and v and hasattr(v[0], 'id'):
+                    clean[k] = [x.id for x in v]
+                else:
+                    clean[k] = v
+            values_json = json.dumps(clean)
+        self.create({
+            'model': model,
+            'local_id': local_id,
+            'operation': operation,
+            'values': values_json,
+        })
+
+    @api.model
     def enqueue_create(self, order_id):
-        """Fast DB insert: schedule a create sync."""
+        """Fast DB insert: schedule a sale.order create sync."""
         self.create({
             'model': 'sale.order',
             'local_id': order_id,
@@ -143,8 +178,7 @@ class RemoteSyncQueue(models.Model):
 
     @api.model
     def enqueue_write(self, order_id, vals):
-        """Fast DB insert: schedule a write sync with serialized vals."""
-        # Only serialize sync-relevant keys to keep payload small
+        """Fast DB insert: schedule a sale.order write sync."""
         sync_fields = {
             'partner_id', 'client_order_ref', 'date_order', 'order_line',
             'state', 'pricelist_id', 'note', 'payment_term_id', 'user_id',
@@ -159,9 +193,41 @@ class RemoteSyncQueue(models.Model):
 
     @api.model
     def enqueue_unlink(self, order_id):
-        """Fast DB insert: schedule a delete sync."""
+        """Fast DB insert: schedule a sale.order delete sync."""
         self.create({
             'model': 'sale.order',
             'local_id': order_id,
+            'operation': 'unlink',
+        })
+
+    # ------------------------------------------------------------------
+    # Payment-specific enqueue helpers
+    # ------------------------------------------------------------------
+
+    @api.model
+    def enqueue_payment_create(self, payment_id):
+        self.create({
+            'model': 'account.payment',
+            'local_id': payment_id,
+            'operation': 'create',
+        })
+
+    @api.model
+    def enqueue_payment_write(self, payment_id, vals):
+        sync_fields = {'amount', 'payment_type', 'date', 'sale_order_id',
+                       'journal_id', 'partner_id', 'payment_reference', 'memo'}
+        slim = {k: v for k, v in vals.items() if k in sync_fields}
+        self.create({
+            'model': 'account.payment',
+            'local_id': payment_id,
+            'operation': 'write',
+            'values': json.dumps(slim),
+        })
+
+    @api.model
+    def enqueue_payment_unlink(self, payment_id):
+        self.create({
+            'model': 'account.payment',
+            'local_id': payment_id,
             'operation': 'unlink',
         })
