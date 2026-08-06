@@ -9,4 +9,10 @@
               name="Configuration"
               parent="menu_remote_sync_root"
               action="action_remote_sync_config"/>
+
+    <menuitem id="menu_remote_sync_queue"
+              name="Queue"
+              parent="menu_remote_sync_root"
+              action="action_remote_sync_queue"
+              sequence="20"/>
 </odoo>
