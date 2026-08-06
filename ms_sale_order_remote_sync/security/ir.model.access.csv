@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_remote_sync_config,remote.sync.config,model_remote_sync_config,,1,1,1,1
+access_remote_sync_mapping,remote.sync.mapping,model_remote_sync_mapping,,1,1,1,1
+access_remote_sync_queue,remote.sync.queue,model_remote_sync_queue,,1,1,1,1

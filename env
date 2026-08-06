@@ -4,5 +4,8 @@ password
 Ss01017729427
 samehashraf947@gmail.com
 
-git hup addions
+git hup  custom addons
 https://github.com/SamehAbdelAlYoussef/menon.git
+
+restart addons
+docker-compose restart odoo

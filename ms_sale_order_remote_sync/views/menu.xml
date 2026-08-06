@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_remote_sync_root"
+              name="Remote Sync"
+              parent="sale.sale_menu_root"
+              sequence="99"/>
+
+    <menuitem id="menu_remote_sync_config"
+              name="Configuration"
+              parent="menu_remote_sync_root"
+              action="action_remote_sync_config"/>
+</odoo>

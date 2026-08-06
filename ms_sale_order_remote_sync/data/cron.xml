@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="cron_process_sync_queue" model="ir.cron">
+            <field name="name">Remote Sync: Process Queue</field>
+            <field name="model_id" ref="model_remote_sync_queue"/>
+            <field name="state">code</field>
+            <field name="code">model._process_queue(limit=20)</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+        </record>
+    </data>
+</odoo>

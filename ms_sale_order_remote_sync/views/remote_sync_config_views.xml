@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_remote_sync_config_form" model="ir.ui.view">
+        <field name="name">remote.sync.config.form</field>
+        <field name="model">remote.sync.config</field>
+        <field name="arch" type="xml">
+            <form string="Remote Sync Configuration">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="test_connection" string="Test Connection"
+                                type="object" class="oe_stat_button" icon="fa-plug"/>
+                    </div>
+                    <group>
+                        <field name="active" widget="boolean_toggle"/>
+                        <field name="name"/>
+                        <field name="target_url" widget="url"/>
+                        <field name="target_db"/>
+                        <field name="username"/>
+                        <field name="password" password="True"/>
+                    </group>
+                    <group string="Fallback">
+                        <field name="default_partner_remote_id"
+                               help="Used when a customer is not found on the remote server."/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_remote_sync_config_tree" model="ir.ui.view">
+        <field name="name">remote.sync.config.tree</field>
+        <field name="model">remote.sync.config</field>
+        <field name="arch" type="xml">
+            <list string="Sync Configurations">
+                <field name="name"/>
+                <field name="target_url"/>
+                <field name="target_db"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Test connection button action -->
+    <record id="action_remote_sync_config" model="ir.actions.act_window">
+        <field name="name">Remote Sync Config</field>
+        <field name="res_model">remote.sync.config</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
