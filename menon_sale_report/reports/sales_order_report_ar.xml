@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_document_ar"
+              inherit_id="sale.report_saleorder_document"
+              primary="True"
+              name="Menon Furniture - Full Arabic Report">
+
+        <xpath expr="//div[@class='page']" position="before">
+            <style>
+                tr.o_subtotal { display: none !important; }
+                th[name='th_taxes'],
+                td[name='td_taxes'] { display: none !important; }
+            </style>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="replace">
+            <div class="row mb-4" id="informations"
+                 style="font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+                        direction: rtl; text-align: right;">
+                <div t-if="doc.client_order_ref" class="col" name="informations_reference">
+                    <strong>المرجع</strong>
+                    <div t-field="doc.client_order_ref"/>
+                </div>
+                <div t-if="doc.date_order" class="col" name="informations_date">
+                    <strong t-if="is_proforma">تاريخ الإصدار</strong>
+                    <strong t-elif="doc.state in ['draft', 'sent']">تاريخ العرض</strong>
+                    <strong t-else="">تاريخ الأمر</strong>
+                    <div t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                </div>
+                <div t-if="doc.validity_date and doc.state in ['draft', 'sent']"
+                     class="col" name="expiration_date">
+                    <strong>تاريخ الانتهاء</strong>
+                    <div t-field="doc.validity_date"/>
+                </div>
+                <div t-if="doc.user_id.name" class="col">
+                    <strong>المندوب</strong>
+                    <div t-field="doc.user_id"/>
+                </div>
+                <div t-if="doc.team_id" class="col">
+                    <strong>الفرع</strong>
+                    <div t-field="doc.team_id"/>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//thead" position="replace">
+            <thead style="display: table-row-group;
+                          font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+                          direction: ltr;">
+                <tr>
+                    <th name="th_description" class="text-start">الوصف</th>
+                    <th name="th_quantity" class="text-end text-nowrap">الكمية</th>
+                    <th name="th_priceunit" class="text-end text-nowrap">سعر الوحدة</th>
+                    <th name="th_discount" t-if="display_discount" class="text-end">
+                        <span>الخصم %</span>
+                    </th>
+                    <th name="th_subtotal" class="text-end">
+                        <span>المبلغ</span>
+                    </th>
+                </tr>
+            </thead>
+        </xpath>
+
+        <xpath expr="//div[@name='so_total_summary']" position="after">
+            <div class="clearfix"
+                 style="margin-top: 6px;
+                font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+                direction: rtl;">
+                <div class="row">
+                    <div class="col-6 ms-auto">
+                        <table class="table table-borderless" style="margin-bottom: 0;">
+                            <tr>
+                                <td style="text-align:right; padding: 3px 8px; font-weight: bold;
+                                   border-top: 1px solid #dee2e6;">
+                                    إجمالي المدفوع:
+                                </td>
+                                <td style="text-align:right; padding: 3px 8px;
+                                   border-top: 1px solid #dee2e6;">
+                                    <span t-field="doc.amount_paid"
+                                          t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:right; padding: 3px 8px; font-weight: bold;
+                                   color: #cc0000; border-top: 1px solid #dee2e6;">
+                                    المبلغ المتبقي:
+                                </td>
+                                <td style="text-align:right; padding: 3px 8px; font-weight: bold;
+                                   color: #cc0000; border-top: 1px solid #dee2e6;">
+                                    <span t-field="doc.amount_remaining"
+                                          t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_saleorder_ar_raw"
+              name="Menon Furniture - Arabic Report Container">
+        <t t-call="web.html_container">
+
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="menon_sale_report.report_saleorder_document_ar"
+                   t-lang="'ar_001'"/>
+            </t>
+
+            <t t-set="doc" t-value="docs[0]"/>
+            <t t-call="web.external_layout">
+                <div class="page"
+                     style="font-family: 'Cairo', 'Tajawal', Arial, sans-serif;
+                            direction: rtl;
+                            text-align: right;">
+
+                    <div style="text-align: center; margin-bottom: 10px;">
+                        <div style="background-color: #1a1a1a; color: #ffffff;
+                                    padding: 8px 16px; border-radius: 4px;">
+                            <span style="font-size: 14px; font-weight: bold;">
+                                شروط التعاقد والضمان ضد عيوب الصناعه من تاريخ الاستلام
+                            </span>
+                        </div>
+                    </div>
+
+                    <div style="background-color: #f9f9f9; border: 1px solid #ddd;
+                                padding: 8px 14px; border-radius: 4px; margin-bottom: 10px;
+                                text-align: center; line-height: 1.8; font-size: 11px;">
+                        <p style="margin:0;">
+                            حرصًا من شركة مينون للأثاث على الشفافية وبناء علاقة قائمة على الثقة والوضوح مع عملائنا
+                            الكرام
+                        </p>
+                        <p style="margin:0; font-weight:bold;">
+                            فقد تم وضع الشروط التالية بما يحقق التوازن بين حقوق المستهلك وحقوق الشركة
+                        </p>
+                        <p style="margin:0; font-weight:bold;">
+                            وذلك دون إخلال بأحكام قانون حماية المستهلك رقم 181 لسنة 2018
+                        </p>
+                    </div>
+
+                    <div style="font-size: 11px; line-height: 1.7;">
+
+                        <div style="margin-bottom: 8px;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:2px;
+                                      border-bottom:1px solid #ccc; padding-bottom:2px;">
+                                1- الإلغاء والاسترجاع
+                            </p>
+                            <ul style="margin:0; padding-right:18px;">
+                                <li>يجوز إلغاء التعاقد خلال 48 ساعة من تاريخ التعاقد ما لم يبدأ التصنيع.</li>
+                                <li>المنتجات المُفصَّلة أو المُصنَّعة خصيصًا لا تُسترجع ولا تُستبدل إلا في حالة عيب
+                                    صناعة مُثبت.
+                                </li>
+                                <li>المنتجات الجاهزة يجوز استرجاعها أو استبدالها خلال 14 يومًا من الاستلام بشرط عدم
+                                    الاستخدام.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 8px;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:2px;
+                                      border-bottom:1px solid #ccc; padding-bottom:2px;">
+                                2- الإلغاء بعد بدء التصنيع
+                            </p>
+                            <ul style="margin:0; padding-right:18px;">
+                                <li>في حال الإلغاء بعد بدء التصنيع، يلتزم العميل بسداد تعويض لا يتجاوز 30% من قيمة
+                                    الفاتورة مقابل التكاليف المنفذة.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 8px;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:2px;
+                                      border-bottom:1px solid #ccc; padding-bottom:2px;">
+                                3- السداد
+                            </p>
+                            <ul style="margin:0; padding-right:18px;">
+                                <li>50% مقدم تعاقد، وباقي القيمة قبل الاستلام بـ 48 ساعة فيما لا يتجاوز 30 يوم من تاريخ
+                                    التعاقد.
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 8px;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:2px;
+                                      border-bottom:1px solid #ccc; padding-bottom:2px;">
+                                4- الشحن والتركيب
+                            </p>
+                            <ul style="margin:0; padding-right:18px;">
+                                <li>الشحن مجاني داخل القاهرة والجيزة حتى الدور الثالث.</li>
+                                <li>يتحمل العميل تكلفة الونش عند تعذر النقل لضيق السلم أو المداخل للمبنى أو الشقة.</li>
+                                <li>الشركة مسؤولة عن التلفيات أثناء النقل أو التركيب بواسطتها فقط.</li>
+                                <li>تنتقل المسؤولية للعميل بعد التوقيع على محضر الاستلام والمعاينة.</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 8px;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:2px;
+                                      border-bottom:1px solid #ccc; padding-bottom:2px;">
+                                5- الضمان
+                            </p>
+                            <ul style="margin:0; padding-right:18px;">
+                                <li>الضمان ضد عيوب الصناعة فقط من تاريخ الاستلام.</li>
+                                <li>المدة: 3 سنوات (انتريهات/ركنات/سفر) – 5 سنوات (غرف نوم/مراتب).</li>
+                                <li>لا يشمل سوء الاستخدام أو الاستهلاك الطبيعي للخامات، إلا في حالة ثبوت عيب صناعة.</li>
+                                <li>الضمان لا يشمل (الجلد - القماش - الزجاج - الرخام - الليد في غرف النوم والسفرة).</li>
+                                <li>يسقط الضمان في حال الفك أو التركيب أو التعديل خارج الشركة.</li>
+                            </ul>
+                        </div>
+
+                        <div style="margin-bottom: 10px;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:2px;
+                                      border-bottom:1px solid #ccc; padding-bottom:2px;">
+                                6- الأسعار
+                            </p>
+                            <ul style="margin:0; padding-right:18px;">
+                                <li>الأسعار سارية لمدة 30 يومًا من تاريخ التعاقد.</li>
+                            </ul>
+                        </div>
+
+                        <div style="border:1px solid #1a1a1a; border-radius:4px;
+                                    padding:7px 14px; margin-bottom:12px;
+                                    background-color:#f5f5f5;">
+                            <p style="font-weight:bold; font-size:12px; margin-bottom:3px;">إقرار</p>
+                            <p style="margin:0;">يُقر العميل بمعاينة الشروط والاحكام وقبوله على ذلك.</p>
+                        </div>
+
+                    </div>
+
+                    <table style="width:100%; margin-top:8px; font-size:11px;
+                                  border:1px solid #ccc; border-collapse:collapse;">
+                        <tr>
+                            <td style="width:50%; padding:10px 14px; text-align:right;
+                                       border-left:1px solid #ccc; vertical-align:middle;">
+                                <strong>توقيع العميل :</strong>
+                                <div style="margin-top:20px;"></div>
+                                <p>
+                                    <strong>عرفتنا منين :</strong>
+                                    <span t-out="doc.how_did_you_know"/>
+                                </p>
+                            </td>
+                            <td style="width:50%; padding:10px 14px; text-align:center;
+                                       vertical-align:middle;">
+                                <strong>مينون للأثاث - صُنَّاع الراحة</strong>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="margin-top:12px; border-top:2px solid #1a1a1a;
+                                padding-top:8px; font-size:10px;">
+                        <p style="font-weight:bold; font-size:11px; margin-bottom:4px;">
+                            مينون للاثاث والتوريدات العمومية
+                        </p>
+
+                        <table style="width:100%; margin-bottom:6px; font-size:10px;
+                                      background-color:#1a1a1a; color:#ffffff; border-radius:4px;">
+                            <tr>
+                                <td style="padding:4px 10px;">
+                                    <strong>رقم الحساب للتحويلات البنكية وانستا باي :</strong>
+                                    5090001000008851 &#160;
+                                    <strong>بنك مصر</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding:4px 10px; border-top:1px solid #444;">
+                                    <strong>رقم الحساب للتحويلات البنكية وانستا باي :</strong>
+                                    09031717178024010019 &#160;
+                                    <strong>البنك الأهلي</strong>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="width:100%; border-collapse:collapse;">
+                            <tr>
+                                <td style="width:75%; vertical-align:top; padding-left:12px;">
+                                    <ul style="margin:4px 0; padding-right:18px; list-style:disc; line-height:1.7;">
+                                        <li>
+                                            <strong>فـرع فيصل:</strong>
+                                            126 شارع فيصل الرئيسي بالقرب من المريوطية.
+                                        </li>
+                                        <li>
+                                            <strong>فـرع أكتوبر:</strong>
+                                            144 الحي الخامس المحور المركزي أمام مستشفى كيلوبترا.
+                                        </li>
+                                        <li>
+                                            <strong>فرع مدينة نصر:</strong>
+                                            123 شارع مصطفى النحاس بالقرب من مدرسة المنهل.
+                                        </li>
+                                        <li>
+                                            <strong>فـرع المعادي:</strong>
+                                            5 شارع الجزائر المعادي.
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td style="width:25%; vertical-align:middle; text-align:center; border-right:1px solid #ccc; padding-right:10px;">
+                                    <div style="border:2px solid #000; border-radius:50px; padding:8px 14px; display:inline-block; background-color:#000;">
+                                        <div style="font-size:10px; font-weight:900; letter-spacing:2px; color:#fff;">
+                                            HOTLINE
+                                        </div>
+                                        <div style="font-size:20px; font-weight:900; letter-spacing:2px; color:#fff;">
+                                            17711
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_saleorder_ar" model="ir.actions.report">
+        <field name="name">Menon - عرض السعر / أمر البيع (عربي)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">menon_sale_report.report_saleorder_ar_raw</field>
+        <field name="report_file">menon_sale_report.report_saleorder_ar_raw</field>
+        <field name="print_report_name">
+            (object.state == 'draft' and 'عرض سعر - ' or 'أمر بيع - ') + (object.name or '')
+        </field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Hidden security group: Dashboard Viewer — controls visibility of the entire Dashboards app -->
+    <record id="group_dashboard_viewer" model="res.groups">
+        <field name="name">Dashboard Viewer</field>
+        <field name="category_id" ref="base.module_category_productivity_dashboard"/>
+    </record>
+
+    <!-- Restrict the ROOT "Dashboards" menu (app drawer icon) — hides the entire app -->
+    <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_root" model="ir.ui.menu">
+        <field name="groups_id" eval="[(5, 0, 0), (4, ref('group_dashboard_viewer')), (4, ref('spreadsheet_dashboard.group_dashboard_manager'))]"/>
+    </record>
+
+    <!-- Restrict the child "Dashboards" menu as well -->
+    <record id="spreadsheet_dashboard.spreadsheet_dashboard_menu_dashboard" model="ir.ui.menu">
+        <field name="groups_id" eval="[(5, 0, 0), (4, ref('group_dashboard_viewer')), (4, ref('spreadsheet_dashboard.group_dashboard_manager'))]"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit CRM Stage form view to add is_design_phase after is_won -->
+    <record id="crm_stage_form_view_inherit_crm_touch" model="ir.ui.view">
+        <field name="name">crm.stage.form.inherit.crm_touch</field>
+        <field name="model">crm.stage</field>
+        <field name="inherit_id" ref="crm.crm_stage_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='is_won']" position="after">
+                <field name="is_design_phase"/>
+                <field name="is_preview_uploaded"/>
+                <field name="is_meeting_access"/>
+                <field name="is_followup"/>
+                <field name="is_synthetic_inspection" string="Contracts"/>
+            </xpath>
+        </field>
+    </record>
+
+
+    <!-- Add reload_on_attachment to CRM lead form: auto-refresh after upload -->
+    <record id="crm_lead_form_view_reload_attachment" model="ir.ui.view">
+        <field name="name">crm.lead.form.reload.attachment</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="reload_on_attachment">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit CRM Lead form view to add inspection fields (Synthetic Inspection only) -->
+    <record id="crm_lead_form_view_inherit_inspection" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.crm_touch.inspection</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <field name="is_synthetic_inspection" invisible="1"/>
+                <field name="is_won_stage" invisible="1"/>
+                <field name="is_preview_uploaded" invisible="1"/>
+                <group string="Preview Uploaded"
+                       invisible="not is_preview_uploaded"
+                       colspan="4">
+                    <group>
+                        <field name="preview_attachment"
+                               string="Preview Uploaded"
+                               widget="many2many_binary"/>
+                    </group>
+                </group>
+                <group string="Contracts"
+                       invisible="not (is_synthetic_inspection or is_won_stage)"
+                       colspan="4">
+                    <group>
+                        <field name="inspection_file"
+                               string="Contracts"
+                               filename="inspection_file_name"/>
+                        <field name="inspection_file_name" invisible="1"/>
+                    </group>
+                    <group>
+                        <field name="inspection_upload_date"
+                               string="Upload Date"
+                               readonly="1"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit CRM Lead form view: Technical Office -->
+    <record id="crm_lead_form_view_work_order" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.crm_touch.work_order</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <group string="Technical Office"
+                       invisible="not (is_work_order_trigger or is_won_stage)"
+                       colspan="4">
+                    <field name="work_order_attachment"
+                           string="Technical Office"
+                           widget="many2many_binary"/>
+                    <field name="reading_two_files"
+                           groups="crm_touch.group_work_order"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Inherit Sale Order form view to add site inspection fields -->
+    <record id="sale_order_form_view_inherit_crm_touch" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.crm_touch</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="before">
+                <group string="Site Inspection">
+                    <label for="is_place_equipped" string="Select inspection result (required before saving):"/>
+                    <field name="is_place_equipped"
+                           widget="boolean_toggle"
+                           required="1"/>
+                    <field name="is_place_not_equipped"
+                           widget="boolean_toggle"
+                           required="1"/>
+                    <button name="open_followup_wizard"
+                            string="Create Activity &amp; Add Note"
+                            type="object"
+                            class="btn-warning"
+                            invisible="not is_place_not_equipped"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Hide New Quotation button from Technical Office group -->
+    <record id="crm_lead_form_hide_new_quotation_btn" model="ir.ui.view">
+        <field name="name">crm.lead.form.hide.new.quotation.btn</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_sale_quotations_new']" position="attributes">
+                <attribute name="groups">!crm_touch.group_work_order</attribute>
+            </xpath>
+        </field>
+    </record>
+
+
+
+</odoo>

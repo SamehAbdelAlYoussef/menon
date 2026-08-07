@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- CRM Touch reload service -->
+        <record id="crm_touch_reload_asset" model="ir.asset">
+            <field name="name">crm_touch/static/src/js/crm_touch.js</field>
+            <field name="bundle">web.assets_backend</field>
+            <field name="path">crm_touch/static/src/js/crm_touch.js</field>
+        </record>
+    </data>
+</odoo>

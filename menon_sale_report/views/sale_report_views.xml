@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Pivot: partner_name_display كـ row -->
+    <record id="view_order_product_pivot_inherit" model="ir.ui.view">
+        <field name="name">sale.report.pivot.inherit.partner.display</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_pivot"/>
+        <field name="arch" type="xml">
+            <xpath expr="//pivot" position="inside">
+                <field name="partner_name_display" type="row"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- List: partner_name_display مع خاصية copy -->
+    <record id="sale_report_view_tree_inherit" model="ir.ui.view">
+        <field name="name">sale.report.view.list.inherit.partner.display</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.sale_report_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="partner_name_display" optional="show" widget="copy_clipboard"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Search: Group By لـ partner_name_display -->
+    <record id="view_order_product_search_inherit" model="ir.ui.view">
+        <field name="name">sale.report.search.inherit.partner.display</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='Customer']" position="after">
+                <filter string="العميل (تليفون / موبايل)" name="CustomerDisplay"
+                        context="{'group_by': 'partner_name_display'}"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

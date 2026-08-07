@@ -1,0 +1,357 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* menon_sale_report
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20260603\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-23 13:37+0000\n"
+"PO-Revision-Date: 2026-06-23 13:37+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: menon_sale_report
+#: model:ir.actions.report,print_report_name:menon_sale_report.action_report_saleorder_ar
+msgid ""
+"\n"
+"            (object.state == 'draft' and 'عرض سعر - ' or 'أمر بيع - ') + (object.name or '')\n"
+"        "
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "1- الإلغاء والاسترجاع"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "2- الإلغاء بعد بدء التصنيع"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "3- السداد"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "4- الشحن والتركيب"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "5- الضمان"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"50% مقدم تعاقد، وباقي القيمة قبل الاستلام بـ 48 ساعة فيما لا يتجاوز 30 يوم من تاريخ\n"
+"                                    التعاقد."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "6- الأسعار"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<span style=\"font-size: 14px; font-weight: bold;\">\n"
+"                                شروط التعاقد والضمان ضد عيوب الصناعه من تاريخ الاستلام\n"
+"                            </span>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "<span>الخصم %</span>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "<span>المبلغ</span>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "<strong>الفرع</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "<strong>المرجع</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "<strong>المندوب</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "<strong>تاريخ الانتهاء</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "<strong>توقيع العميل :</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<strong>رقم الحساب للتحويلات البنكية وانستا باي :</strong>\n"
+"                                    09031717178024010019  \n"
+"                                    <strong>البنك الأهلي</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<strong>رقم الحساب للتحويلات البنكية وانستا باي :</strong>\n"
+"                                    5090001000008851  \n"
+"                                    <strong>بنك مصر</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "<strong>عرفتنا منين :</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<strong>فرع مدينة نصر:</strong>\n"
+"                                            123 شارع مصطفى النحاس بالقرب من مدرسة المنهل."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<strong>فـرع أكتوبر:</strong>\n"
+"                                            144 الحي الخامس المحور المركزي أمام مستشفى كيلوبترا."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<strong>فـرع المعادي:</strong>\n"
+"                                            5 شارع الجزائر المعادي."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"<strong>فـرع فيصل:</strong>\n"
+"                                            126 شارع فيصل الرئيسي بالقرب من المريوطية."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "<strong>مينون للأثاث - صُنَّاع الراحة</strong>"
+msgstr ""
+
+#. module: menon_sale_report
+#: model:ir.model.fields,field_description:menon_sale_report.field_sale_report__partner_name_display
+msgid "العميل (الاسم / التليفون / الموبايل)"
+msgstr "العميل (الاسم / التليفون / الموبايل)"
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.view_order_product_search_inherit
+msgid "العميل (تليفون / موبايل)"
+msgstr "العميل (تليفون / موبايل)"
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "HOTLINE"
+msgstr ""
+
+#. module: menon_sale_report
+#: model:ir.model.fields,field_description:menon_sale_report.field_sale_order__how_did_you_know
+msgid "How did you hear about us?"
+msgstr "عرفتنا منين؟"
+
+#. module: menon_sale_report
+#: model:ir.actions.report,name:menon_sale_report.action_report_saleorder_ar
+msgid "Menon - عرض السعر / أمر البيع (عربي)"
+msgstr ""
+
+#. module: menon_sale_report
+#: model:ir.model,name:menon_sale_report.model_sale_report
+msgid "Sales Analysis Report"
+msgstr "تقرير المبيعات التحليلي"
+
+#. module: menon_sale_report
+#: model:ir.model,name:menon_sale_report.model_sale_order
+msgid "Sales Order"
+msgstr "أمر البيع"
+
+#. module: menon_sale_report
+#: model:ir.model.fields,field_description:menon_sale_report.field_sale_order__amount_paid
+msgid "إجمالي المدفوع"
+msgstr "مبلغ معاملات الدفع "
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "إجمالي المدفوع:"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "إقرار"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "الأسعار سارية لمدة 30 يومًا من تاريخ التعاقد."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "الشحن مجاني داخل القاهرة والجيزة حتى الدور الثالث."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "الشركة مسؤولة عن التلفيات أثناء النقل أو التركيب بواسطتها فقط."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "الضمان ضد عيوب الصناعة فقط من تاريخ الاستلام."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"الضمان لا يشمل (الجلد - القماش - الزجاج - الرخام - الليد في غرف النوم "
+"والسفرة)."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "الكمية"
+msgstr ""
+
+#. module: menon_sale_report
+#: model:ir.model.fields,field_description:menon_sale_report.field_sale_order__amount_remaining
+msgid "المبلغ المتبقي"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "المبلغ المتبقي:"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "المدة: 3 سنوات (انتريهات/ركنات/سفر) – 5 سنوات (غرف نوم/مراتب)."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"المنتجات الجاهزة يجوز استرجاعها أو استبدالها خلال 14 يومًا من الاستلام بشرط عدم\n"
+"                                    الاستخدام."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"المنتجات المُفصَّلة أو المُصنَّعة خصيصًا لا تُسترجع ولا تُستبدل إلا في حالة عيب\n"
+"                                    صناعة مُثبت."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "الوصف"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "تاريخ الأمر"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "تاريخ الإصدار"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "تاريخ العرض"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "تنتقل المسؤولية للعميل بعد التوقيع على محضر الاستلام والمعاينة."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"حرصًا من شركة مينون للأثاث على الشفافية وبناء علاقة قائمة على الثقة والوضوح مع عملائنا\n"
+"                            الكرام"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_document_ar
+msgid "سعر الوحدة"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"فقد تم وضع الشروط التالية بما يحقق التوازن بين حقوق المستهلك وحقوق الشركة"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"في حال الإلغاء بعد بدء التصنيع، يلتزم العميل بسداد تعويض لا يتجاوز 30% من قيمة\n"
+"                                    الفاتورة مقابل التكاليف المنفذة."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"لا يشمل سوء الاستخدام أو الاستهلاك الطبيعي للخامات، إلا في حالة ثبوت عيب "
+"صناعة."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "مينون للاثاث والتوريدات العمومية"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "وذلك دون إخلال بأحكام قانون حماية المستهلك رقم 181 لسنة 2018"
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid ""
+"يتحمل العميل تكلفة الونش عند تعذر النقل لضيق السلم أو المداخل للمبنى أو "
+"الشقة."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "يجوز إلغاء التعاقد خلال 48 ساعة من تاريخ التعاقد ما لم يبدأ التصنيع."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "يسقط الضمان في حال الفك أو التركيب أو التعديل خارج الشركة."
+msgstr ""
+
+#. module: menon_sale_report
+#: model_terms:ir.ui.view,arch_db:menon_sale_report.report_saleorder_ar_raw
+msgid "يُقر العميل بمعاينة الشروط والاحكام وقبوله على ذلك."
+msgstr ""

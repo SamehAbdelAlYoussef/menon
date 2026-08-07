@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- New security group: Journal Entries views (checkbox only - no accounting permissions) -->
+    <record id="group_journal_entries_views" model="res.groups">
+        <field name="name">Journal Entries views</field>
+        <field name="category_id" ref="base.module_category_productivity_dashboard"/>
+    </record>
+
+    <!-- Update parent "Accounting" menu to also be visible to users with Journal Entries views group -->
+    <record id="account.menu_finance_entries" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('group_journal_entries_views'))]"/>
+    </record>
+
+    <!-- Restrict "Journal Entries" menu to ONLY users with Journal Entries views group -->
+    <record id="account.menu_action_move_journal_line_form" model="ir.ui.menu">
+        <field name="groups_id" eval="[(5, 0, 0), (4, ref('group_journal_entries_views'))]"/>
+    </record>
+
+</odoo>

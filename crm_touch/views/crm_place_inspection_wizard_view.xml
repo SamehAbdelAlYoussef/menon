@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="crm_place_inspection_wizard_form_view" model="ir.ui.view">
+        <field name="name">crm.place.inspection.wizard.form</field>
+        <field name="model">crm.place.inspection.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Follow-up Details">
+
+                <field name="lead_id" invisible="1"/>
+
+                <group string="Follow-up Scheduling">
+                    <field name="next_followup_date"
+                           string="Next Follow-up Date"
+                           required="True"/>
+                    <field name="followup_notes"
+                           string="Follow-up Notes"
+                           widget="text"
+                           required="True"
+                           placeholder="Add your follow-up notes here..."/>
+                </group>
+
+                <footer>
+                    <button name="action_confirm"
+                            string="Save &amp; Close"
+                            type="object"
+                            class="btn-primary"
+                            data-hotkey="v"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"
+                            data-hotkey="z"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+</odoo>

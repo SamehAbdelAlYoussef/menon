@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================================ -->
+    <!-- Pivot View                                                   -->
+    <!-- ============================================================ -->
+    <record id="product_stock_pivot" model="ir.ui.view">
+        <field name="name">product.stock.pivot</field>
+        <field name="model">stock.quant</field>
+        <field name="priority" eval="20"/>
+        <field name="arch" type="xml">
+            <pivot string="Product Stock by Warehouse">
+                <field name="product_id" type="row"/>
+                <field name="pivot_warehouse_id" type="col"/>
+                <field name="location_id" type="col"/>
+                <field name="quantity" type="measure"/>
+                <field name="reserved_quantity" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Search View                                                  -->
+    <!-- ============================================================ -->
+    <record id="product_stock_search" model="ir.ui.view">
+        <field name="name">product.stock.search</field>
+        <field name="model">stock.quant</field>
+        <field name="priority" eval="30"/>
+        <field name="arch" type="xml">
+            <search string="Product Stock by Warehouse">
+                <field name="product_id"/>
+                <field name="pivot_warehouse_id"/>
+                <field name="location_id"/>
+                <field name="product_categ_id"/>
+                <separator/>
+                <filter string="Has Stock" name="in_stock"
+                        domain="[('quantity', '&gt;', 0.0)]"/>
+                <filter string="Internal Locations" name="internal"
+                        domain="[('location_id.usage', '=', 'internal')]"/>
+                <separator/>
+                <filter string="Product" name="group_product"
+                        context="{'group_by': 'product_id'}"/>
+                <filter string="Warehouse" name="group_warehouse"
+                        context="{'group_by': 'pivot_warehouse_id'}"/>
+                <filter string="Location" name="group_location"
+                        context="{'group_by': 'location_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Window Action — defaults to pivot                             -->
+    <!-- ============================================================ -->
+    <record id="action_product_stock_warehouse" model="ir.actions.act_window">
+        <field name="name">Product Stock by Warehouse</field>
+        <field name="res_model">stock.quant</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="view_id" ref="product_stock_pivot"/>
+        <field name="search_view_id" ref="product_stock_search"/>
+        <field name="context">{
+            'search_default_in_stock': 1,
+            'search_default_internal': 1,
+        }</field>
+    </record>
+
+    <!-- ============================================================ -->
+    <!-- Menu — Sales > Reporting (same dropdown as Sales Analysis)   -->
+    <!-- ============================================================ -->
+    <menuitem id="menu_product_stock_warehouse"
+              name="Stock by Warehouse"
+              action="action_product_stock_warehouse"
+              parent="sale.menu_sale_report"
+              sequence="50"/>
+
+</odoo>

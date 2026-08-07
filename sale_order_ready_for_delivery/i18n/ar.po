@@ -1,0 +1,122 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* sale_order_ready_for_delivery
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20260603\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-07-30 21:39+0000\n"
+"PO-Revision-Date: 2026-07-30 21:39+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: sale_order_ready_for_delivery
+#: model_terms:ir.ui.view,arch_db:sale_order_ready_for_delivery.sale_order_tree_ready_delivery
+msgid "Delivery"
+msgstr "التسليم"
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+#: model:ir.model.fields,field_description:sale_order_ready_for_delivery.field_sale_order__ready_for_delivery
+msgid "Delivery Status"
+msgstr "حالة التسليم"
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+#: model:ir.model.fields,help:sale_order_ready_for_delivery.field_sale_order__ready_for_delivery
+msgid "Delivery readiness based on product stock availability."
+msgstr "جاهزية التسليم بناءً على توفر المنتجات في المخزون."
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+#: model:ir.model.fields.selection,name:sale_order_ready_for_delivery.selection__sale_order__ready_for_delivery__not_ready
+#: model_terms:ir.ui.view,arch_db:sale_order_ready_for_delivery.sale_order_search_ready_delivery
+msgid "Not Ready for Delivery"
+msgstr "غير جاهز للتسليم"
+
+#. module: sale_order_ready_for_delivery
+#: model_terms:ir.ui.view,arch_db:sale_order_ready_for_delivery.sale_order_search_ready_delivery
+msgid "Pending sales orders not yet ready for delivery"
+msgstr "أوامر البيع المعلقة غير الجاهزة للتسليم بعد"
+
+#. module: sale_order_ready_for_delivery
+#: model:ir.model,name:sale_order_ready_for_delivery.model_stock_quant
+msgid "Quants"
+msgstr "سجلات الكميات"
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+#: model:ir.model.fields.selection,name:sale_order_ready_for_delivery.selection__sale_order__ready_for_delivery__ready
+#: model_terms:ir.ui.view,arch_db:sale_order_ready_for_delivery.sale_order_search_ready_delivery
+msgid "Ready for Delivery"
+msgstr "جاهز للتسليم"
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+msgid "Ready for Delivery: %s"
+msgstr "جاهز للتسليم: %s"
+
+#. module: sale_order_ready_for_delivery
+#: model:ir.actions.server,name:sale_order_ready_for_delivery.cron_recalculate_ready_for_delivery_ir_actions_server
+msgid "Recalculate Sales Order Readiness"
+msgstr "إعادة حساب جاهزية أوامر البيع"
+
+#. module: sale_order_ready_for_delivery
+#: model:ir.model,name:sale_order_ready_for_delivery.model_sale_order
+msgid "Sales Order"
+msgstr "أمر البيع"
+
+#. module: sale_order_ready_for_delivery
+#: model:ir.model,name:sale_order_ready_for_delivery.model_sale_order_line
+msgid "Sales Order Line"
+msgstr "سطر أمر البيع"
+
+#. module: sale_order_ready_for_delivery
+#: model_terms:ir.ui.view,arch_db:sale_order_ready_for_delivery.sale_order_search_ready_delivery
+msgid "Sales orders where all products are available in stock"
+msgstr "أوامر البيع التي تتوفر فيها جميع المنتجات في المخزون"
+
+#. module: sale_order_ready_for_delivery
+#: model:ir.model,name:sale_order_ready_for_delivery.model_stock_picking
+msgid "Transfer"
+msgstr "تحويل"
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+msgid ""
+"⚠️ Sales Order %s is no longer Ready for Delivery.\n"
+"Some products are now out of stock. You will be notified when they become available again."
+msgstr ""
+"⚠️ أمر البيع %s لم يعد جاهزًا للتسليم.\n"
+"بعض المنتجات نفدت من المخزون. سيتم إشعارك عندما تصبح متوفرة مرة أخرى."
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+msgid ""
+"✅ Sales Order %s is Ready for Delivery!\n"
+"All products are now available in stock. You can confirm and deliver this order."
+msgstr ""
+"✅ أمر البيع %s جاهز للتسليم!\n"
+"جميع المنتجات متوفرة الآن في المخزون. يمكنك تأكيد وتسليم هذا الطلب."
+
+#. module: sale_order_ready_for_delivery
+#. odoo-python
+#: code:addons/sale_order_ready_for_delivery/models/sale_order.py:0
+msgid ""
+"📦 Sales Order %s — Waiting for Stock\n"
+"Some products are not yet available. You will be notified as soon as all products become ready."
+msgstr ""
+"📦 أمر البيع %s — في انتظار المخزون\n"
+"بعض المنتجات غير متوفرة بعد. سيتم إشعارك فور توفر جميع المنتجات."

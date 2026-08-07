@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ─── Wizard Form View ─────────────────────────────────────────── -->
+    <record id="crm_meeting_action_wizard_form_view" model="ir.ui.view">
+        <field name="name">crm.meeting.action.wizard.form</field>
+        <field name="model">crm.meeting.action.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Meeting Actions">
+
+                <!-- Hidden technical fields -->
+                <field name="lead_id" invisible="1"/>
+                <field name="is_meeting_access" invisible="1"/>
+
+                <!-- ── Action selector — TOP, visible only if meeting access ── -->
+                <group invisible="not is_meeting_access">
+                    <field name="action_type"
+                           required="is_meeting_access"
+                           widget="radio"/>
+                </group>
+
+                <!-- ── Access denied banner ──────────────────────────── -->
+                <div class="alert alert-warning mb-3" role="alert"
+                     invisible="is_meeting_access">
+                    <i class="fa fa-exclamation-triangle me-1" title="Warning"/>
+                    <strong>Not Available: </strong>
+                    Meeting actions are only available when the lead is in the
+                    <strong>"Meeting with Client"</strong> stage.
+                </div>
+
+                <!-- ── Contract: info + direct open button ───────────── -->
+                <div invisible="not is_meeting_access or action_type != 'contract'">
+                    <div class="alert alert-info mb-3" role="alert">
+                        <i class="fa fa-info-circle me-1" title="Info"/>
+                        A <strong>draft Sales Order</strong> will be created and linked
+                        to this opportunity automatically upon confirmation.
+                    </div>
+                    <div class="text-center mb-3">
+                        <button name="action_apply"
+                                string="Open Sales Order Form"
+                                type="object"
+                                class="btn-success btn-lg"/>
+                    </div>
+                </div>
+
+                <!-- ── Follow-up date + notes ────────────────────────── -->
+                <group invisible="not is_meeting_access or action_type != 'followup'">
+                    <field name="next_followup_date"
+                           required="is_meeting_access and action_type == 'followup'"/>
+                    <field name="followup_notes"
+                           required="is_meeting_access and action_type == 'followup'"
+                           placeholder="Add your notes here before scheduling the meeting..."/>
+                </group>
+
+                <!-- ── Lost reason ────────────────────────────────────── -->
+                <group invisible="not is_meeting_access or action_type != 'cancel'">
+                    <field name="lost_reason_id"
+                           required="is_meeting_access and action_type == 'cancel'"/>
+                </group>
+
+                <footer>
+                    <button name="action_apply"
+                            string="Apply"
+                            type="object"
+                            class="btn-primary"
+                            data-hotkey="v"
+                            invisible="not is_meeting_access or not action_type or action_type == 'contract'"/>
+                    <button string="Cancel"
+                            class="btn-secondary"
+                            special="cancel"
+                            data-hotkey="z"/>
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- ─── CRM Lead Form: add header button ─────────────────────────── -->
+    <record id="crm_lead_form_view_inherit_meeting_btn" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.crm_touch.meeting_btn</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/field[@widget='statusbar_duration']" position="before">
+                <field name="is_meeting_access" invisible="1"/>
+                <button name="action_open_meeting_wizard"
+                        string="Meeting Actions"
+                        type="object"
+                        class="btn-secondary"
+                        invisible="not is_meeting_access"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

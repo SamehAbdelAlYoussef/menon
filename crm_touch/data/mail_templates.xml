@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <data noupdate="1">
+        <record id="mail_template_crm_lead_assigned" model="mail.template">
+            <field name="name">CRM Lead Assignment Notification</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="subject">{{ object.company_id.name }} CRM Lead ({{ object.name or 'n/a' }})</field>
+            <field name="email_from">{{ object.company_id.email or user.email }}</field>
+            <field name="email_to">{{ object.user_id.email }}</field>
+            <field name="partner_to">{{ object.user_id.partner_id.id }}</field>
+            <field name="description">Sent automatically to salesperson when assigned to a new CRM lead</field>
+            <field name="body_html" type="html">
+                <div style="background-color: #f8fafc; padding: 40px 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; direction: ltr;">
+                <table align="center" width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); overflow: hidden;">
+                    <tr>
+                        <td style="background-color: #6366f1; padding: 32px 30px; text-align: left;">
+                            <h2 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">
+                                New Lead Assigned
+                            </h2>
+                            <p style="color: #e0e7ff; margin: 6px 0 0; font-size: 14px;">
+                                Odoo CRM Notification
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="padding: 35px 30px;">
+                            <p style="margin: 0 0 24px; font-size: 15px; color: #1e293b; line-height: 1.5;">
+                                Dear <strong><t t-out="object.user_id.name or 'User'"/></strong>,
+                            </p>
+                            <p style="margin: 0 0 20px; font-size: 14px; color: #64748b; line-height: 1.5;">
+                                You have been assigned as the salesperson for the following lead:
+                            </p>
+
+                            <div style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 28px;">
+                                <table width="100%" cellpadding="14" cellspacing="0" style="border-collapse: collapse;">
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="background-color: #f8fafc; font-weight: 600; color: #475569; width: 35%; font-size: 13px; text-transform: uppercase;">Lead Name</td>
+                                        <td style="color: #0f172a; font-weight: 500; font-size: 14px;"><t t-out="object.name or 'n/a'"/></td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;">Stage</td>
+                                        <td style="color: #0f172a; font-size: 14px;">
+                                            <span style="background-color: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                                <t t-out="object.stage_id.name or 'New'"/>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                                        <td style="background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;">Customer</td>
+                                        <td style="color: #0f172a; font-size: 14px;">
+                                            <t t-if="object.partner_id">
+                                                <t t-out="object.partner_id.name"/>
+                                            </t>
+                                                <t t-else=""><span style="color: #94a3b8; font-style: italic;">Not Specified</span></t>
+                                        </td>
+                                    </tr>
+                                    <t t-if="object.expected_revenue">
+                                        <tr style="border-bottom: 1px solid #e2e8f0;">
+                                            <td style="background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;">Expected Revenue</td>
+                                            <td style="color: #16a34a; font-weight: 600; font-size: 14px;">
+                                                <t t-out="object.expected_revenue" t-options="{'widget': 'monetary', 'display_currency': object.company_id.currency_id}"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="object.contact_name">
+                                        <tr>
+                                            <td style="background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;">Contact</td>
+                                            <td style="color: #0f172a; font-size: 14px;">
+                                                <t t-out="object.contact_name"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </table>
+                            </div>
+
+                            <div style="text-align: center; margin: 32px 0 24px;">
+                                <a t-att-href="'/web#id=%s&amp;model=crm.lead&amp;view_type=form' % object.id"
+                                   style="display: inline-block; padding: 14px 32px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);">
+                                    View Lead Details
+                                </a>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0 20px;"/>
+                            <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.5;">
+                                Best regards,<br/>
+                                <strong style="color: #475569;"><t t-out="object.company_id.name or user.company_id.name or 'CRM Team'"/></strong>
+                            </p>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 20px 30px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
+                            This is an automated operational email sent from <strong><t t-out="object.company_id.name or 'Odoo CRM'"/></strong>.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+             </field>
+            <field name="lang">{{ object.user_id.lang or 'en_US' }}</field>
+            <field name="auto_delete" eval="True"/>
+        </record>
+    </data>
+</odoo>

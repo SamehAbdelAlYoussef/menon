@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_crm_lead_tree_inherit" model="ir.ui.view">
+            <field name="name">crm.lead.tree.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
+            <field name="arch" type="xml">
+                <xpath expr="//list/header" position="inside">
+                    <button name="crm_xlsx_report"
+                            type="object"
+                            string="📊 Report"
+                            class="btn-primary"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_crm_lead_form_inherit" model="ir.ui.view">
+            <field name="name">crm.lead.form.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='lead']//field[@name='campaign_id']" position="after">
+                    <field name="num_of_media"
+                    />
+                </xpath>
+                <xpath expr="//group" position="inside">
+                    <group>
+                        <group string="حالة العميل">
+                            <field name="probability_client"/>
+                            <field name="is_preview"/>
+                            <field name="no_response"/>
+                        </group>
+
+                        <group string="بيانات التواجد">
+                            <field name="visit_date"/>
+                            <field name="visit_time" widget="time"/>
+                            <field name="is_out"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="بيانات الكامبين">
+                            <field name="campaign_date"/>
+                            <field name="decor_engineer_id"/>
+                            <field name="inspection_upload_date"/>
+                            <field name="location"/>
+                            <field name="location_map_url" widget="url" string="فتح الخريطة"/>
+                        </group>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        <record id="crm_lead_search_inherit_visit" model="ir.ui.view">
+            <field name="name">crm.lead.search.inherit.visit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.view_crm_case_opportunities_filter"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//search" position="inside">
+                    <field name="visit_date"/>
+                    <filter string="Visit Today"
+                            name="visit_today"
+                            domain="[('visit_date','=',context_today())]"/>
+
+                </xpath>
+                <xpath expr="//filter[@name='creation_date']" position="after">
+                    <filter string="Visit Date"
+                            name="filter_visit_date"
+                            date="visit_date"/>
+                </xpath>
+
+            </field>
+        </record>
+        <record id="ir_cron_no_response_client" model="ir.cron">
+            <field name="name">CRM: إشعار العملاء بدون رد</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">model.no_response_client()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active">True</field>
+        </record>
+    </data>
+</odoo>

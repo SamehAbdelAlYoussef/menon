@@ -1,0 +1,999 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* crm_touch
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20260603\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-06-17 16:42+0000\n"
+"PO-Revision-Date: 2026-06-17 16:42+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: crm_touch
+#: model:mail.template,body_html:crm_touch.mail_template_crm_lead_assigned
+msgid ""
+"<div style=\"background-color: #f8fafc; padding: 40px 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; direction: ltr;\">\n"
+"                <table align=\"center\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); overflow: hidden;\">\n"
+"                    <tr>\n"
+"                        <td style=\"background-color: #6366f1; padding: 32px 30px; text-align: left;\">\n"
+"                            <h2 style=\"color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;\">\n"
+"                                New Lead Assigned\n"
+"                            </h2>\n"
+"                            <p style=\"color: #e0e7ff; margin: 6px 0 0; font-size: 14px;\">\n"
+"                                Odoo CRM Notification\n"
+"                            </p>\n"
+"                        </td>\n"
+"                    </tr>\n"
+"\n"
+"                    <tr>\n"
+"                        <td style=\"padding: 35px 30px;\">\n"
+"                            <p style=\"margin: 0 0 24px; font-size: 15px; color: #1e293b; line-height: 1.5;\">\n"
+"                                Dear <strong><t t-out=\"object.user_id.name or 'User'\"/></strong>,\n"
+"                            </p>\n"
+"                            <p style=\"margin: 0 0 20px; font-size: 14px; color: #64748b; line-height: 1.5;\">\n"
+"                                You have been assigned as the salesperson for the following lead:\n"
+"                            </p>\n"
+"\n"
+"                            <div style=\"border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; margin-bottom: 28px;\">\n"
+"                                <table width=\"100%\" cellpadding=\"14\" cellspacing=\"0\" style=\"border-collapse: collapse;\">\n"
+"                                    <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n"
+"                                        <td style=\"background-color: #f8fafc; font-weight: 600; color: #475569; width: 35%; font-size: 13px; text-transform: uppercase;\">Lead Name</td>\n"
+"                                        <td style=\"color: #0f172a; font-weight: 500; font-size: 14px;\"><t t-out=\"object.name or 'n/a'\"/></td>\n"
+"                                    </tr>\n"
+"                                    <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n"
+"                                        <td style=\"background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;\">Stage</td>\n"
+"                                        <td style=\"color: #0f172a; font-size: 14px;\">\n"
+"                                            <span style=\"background-color: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;\">\n"
+"                                                <t t-out=\"object.stage_id.name or 'New'\"/>\n"
+"                                            </span>\n"
+"                                        </td>\n"
+"                                    </tr>\n"
+"                                    <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n"
+"                                        <td style=\"background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;\">Customer</td>\n"
+"                                        <td style=\"color: #0f172a; font-size: 14px;\">\n"
+"                                            <t t-if=\"object.partner_id\">\n"
+"                                                <t t-out=\"object.partner_id.name\"/>\n"
+"                                            </t>\n"
+"                                                <t t-else=\"\"><span style=\"color: #94a3b8; font-style: italic;\">Not Specified</span></t>\n"
+"                                        </td>\n"
+"                                    </tr>\n"
+"                                    <t t-if=\"object.expected_revenue\">\n"
+"                                        <tr style=\"border-bottom: 1px solid #e2e8f0;\">\n"
+"                                            <td style=\"background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;\">Expected Revenue</td>\n"
+"                                            <td style=\"color: #16a34a; font-weight: 600; font-size: 14px;\">\n"
+"                                                <t t-out=\"object.expected_revenue\" t-options=\"{'widget': 'monetary', 'display_currency': object.company_id.currency_id}\"/>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </t>\n"
+"                                    <t t-if=\"object.contact_name\">\n"
+"                                        <tr>\n"
+"                                            <td style=\"background-color: #f8fafc; font-weight: 600; color: #475569; font-size: 13px; text-transform: uppercase;\">Contact</td>\n"
+"                                            <td style=\"color: #0f172a; font-size: 14px;\">\n"
+"                                                <t t-out=\"object.contact_name\"/>\n"
+"                                            </td>\n"
+"                                        </tr>\n"
+"                                    </t>\n"
+"                                </table>\n"
+"                            </div>\n"
+"\n"
+"                            <div style=\"text-align: center; margin: 32px 0 24px;\">\n"
+"                                <a t-att-href=\"'/web#id=%s&amp;model=crm.lead&amp;view_type=form' % object.id\" style=\"display: inline-block; padding: 14px 32px; background-color: #6366f1; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);\">\n"
+"                                    View Lead Details\n"
+"                                </a>\n"
+"                            </div>\n"
+"\n"
+"                            <hr style=\"border: 0; border-top: 1px solid #f1f5f9; margin: 30px 0 20px;\"/>\n"
+"                            <p style=\"margin: 0; font-size: 13px; color: #64748b; line-height: 1.5;\">\n"
+"                                Best regards,<br/>\n"
+"                                <strong style=\"color: #475569;\"><t t-out=\"object.company_id.name or user.company_id.name or 'CRM Team'\"/></strong>\n"
+"                            </p>\n"
+"                        </td>\n"
+"                    </tr>\n"
+"\n"
+"                    <tr>\n"
+"                        <td style=\"background-color: #f8fafc; padding: 20px 30px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #f1f5f9;\">\n"
+"                            This is an automated operational email sent from <strong><t t-out=\"object.company_id.name or 'Odoo CRM'\"/></strong>.\n"
+"                        </td>\n"
+"                    </tr>\n"
+"                </table>\n"
+"            </div>\n"
+"             "
+msgstr ""
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+msgid ""
+"<i class=\"fa fa-exclamation-triangle me-1\" title=\"Warning\"/>\n"
+"                    <strong>Not Available: </strong>\n"
+"                    Meeting actions are only available when the lead is in the\n"
+"                    <strong>\"Meeting with Client\"</strong> stage."
+msgstr ""
+"<i class=\"fa fa-exclamation-triangle me-1\" title=\"تحذير\"/>\n"
+"                    <strong>غير متاح: </strong>\n"
+"                    إجراءات الاجتماع متاحة فقط عندما يكون العميل المحتمل في\n"
+"                    مرحلة <strong>\"اجتماع مع العميل\"</strong>."
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+msgid ""
+"<i class=\"fa fa-info-circle me-1\" title=\"Info\"/>\n"
+"                        A <strong>draft Sales Order</strong> will be created and linked\n"
+"                        to this opportunity automatically upon confirmation."
+msgstr ""
+"<i class=\"fa fa-info-circle me-1\" title=\"معلومة\"/>\n"
+"                        سيتم إنشاء <strong>أمر بيع مسودة</strong> وربطه\n"
+"                        بهذه الفرصة تلقائياً عند التأكيد."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid "A log note must be added before moving the lead to the \"%s\" stage."
+msgstr "يجب إضافة ملاحظة قبل نقل العميل المحتمل إلى مرحلة \"%s\"."
+
+#. module: crm_touch
+#: model:ir.model.constraint,message:crm_touch.constraint_sale_order_check_place_equipment
+msgid "A place cannot be both equipped and unequipped at the same time!"
+msgstr "لا يمكن أن يكون المكان مجهزاً وغير مجهز في نفس الوقت!"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"A preview attachment must be uploaded before moving the lead to stage "
+"\"%s\"."
+msgstr "يجب رفع مرفق معاينة قبل نقل العميل المحتمل إلى مرحلة \"%s\"."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid "A salesperson must be assigned before this stage."
+msgstr "يجب تعيين مندوب مبيعات قبل هذه المرحلة."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__action_type
+msgid "Action"
+msgstr "الإجراء"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_place_inspection_wizard.py:0
+msgid "Activity created! Save the Sales Order to complete."
+msgstr "تم إنشاء النشاط! احفظ أمر البيع لإكمال العملية."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_meeting_action_wizard__followup_notes
+msgid "Add notes before scheduling the follow-up meeting."
+msgstr "أضف ملاحظات قبل جدولة اجتماع المتابعة."
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Add your follow-up notes here..."
+msgstr "أضف ملاحظات المتابعة هنا..."
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+msgid "Add your notes here before scheduling the meeting..."
+msgstr "أضف ملاحظاتك هنا قبل جدولة الاجتماع..."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"An inspection file must be uploaded in the \"Upload Inspection Files\" field"
+" before marking the lead as Won."
+msgstr ""
+"يجب رفع ملف معاينة في حقل \"رفع ملفات المعاينة\" قبل تعليم العميل المحتمل "
+"كمكتمل."
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+msgid "Apply"
+msgstr "تطبيق"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__assigned_stage_sequence
+msgid "Assignment Stage Sequence"
+msgstr "تسلسل مرحلة التعيين"
+
+#. module: crm_touch
+#: model:ir.model,name:crm_touch.model_ir_attachment
+msgid "Attachment"
+msgstr "مرفق"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_sale_order__crm_lead_id
+msgid "CRM Lead"
+msgstr "العميل المحتمل"
+
+#. module: crm_touch
+#: model:mail.template,name:crm_touch.mail_template_crm_lead_assigned
+msgid "CRM Lead Assignment Notification"
+msgstr "إشعار تعيين عميل متوقع"
+
+#. module: crm_touch
+#: model:ir.model,name:crm_touch.model_crm_meeting_action_wizard
+msgid "CRM Meeting Action Wizard"
+msgstr "مساعد إجراءات اجتماع إدارة علاقات العملاء"
+
+#. module: crm_touch
+#: model:ir.model,name:crm_touch.model_crm_place_inspection_wizard
+msgid "CRM Place Inspection Wizard"
+msgstr "مساعد معاينة المكان"
+
+#. module: crm_touch
+#: model:ir.model,name:crm_touch.model_crm_stage
+msgid "CRM Stages"
+msgstr "مراحل إدارة علاقات العملاء"
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Cancel"
+msgstr "إلغاء"
+
+#. module: crm_touch
+#: model:ir.model.fields.selection,name:crm_touch.selection__crm_meeting_action_wizard__action_type__cancel
+msgid "Cancel Opportunity"
+msgstr "إلغاء الفرصة"
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__is_work_order_trigger
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_work_order_trigger
+msgid ""
+"Check this if confirming Reading Two Files in this stage should auto-"
+"transition the lead to Won."
+msgstr ""
+"حدد هذا إذا كان رفع مرفق أمر الشغل في هذه المرحلة سيؤدي تلقائياً إلى نقل "
+"العميل المحتمل إلى مكتمل."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_inspection_stage
+msgid ""
+"Check this if this stage belongs to the Inspection Department. Users in the "
+"Inspection Department group will only see stages and leads marked with this "
+"flag."
+msgstr ""
+"حدد هذا إذا كانت هذه المرحلة تابعة لقسم المعاينة. المستخدمون في مجموعة قسم "
+"المعاينة سيرون فقط المراحل والعملاء المحتملين الموسومين بهذه العلامة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_operations_stage
+msgid ""
+"Check this if this stage belongs to the Operations Department. Users in the "
+"Operations Department group will only see stages and leads marked with this "
+"flag."
+msgstr ""
+"حدد هذا إذا كانت هذه المرحلة تابعة لقسم العمليات. المستخدمون في مجموعة قسم "
+"العمليات سيرون فقط المراحل والعملاء المحتملين الموسومين بهذه العلامة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_sales_person_stage
+msgid ""
+"Check this if this stage belongs to the Sales Person group. Users in the "
+"Sales Person group will only see stages and leads marked with this flag."
+msgstr ""
+"حدد هذا إذا كانت هذه المرحلة تابعة لمجموعة مندوب المبيعات. المستخدمون في "
+"مجموعة مندوب المبيعات سيرون فقط المراحل والعملاء المحتملين الموسومين بهذه "
+"العلامة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_sales_stage
+msgid ""
+"Check this if this stage belongs to the Sales group. Users in the Sales "
+"group will only see stages and leads marked with this flag."
+msgstr ""
+"حدد هذا إذا كانت هذه المرحلة تابعة لمجموعة المبيعات. المستخدمون في مجموعة "
+"المبيعات سيرون فقط المراحل والعملاء المحتملين الموسومين بهذه العلامة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__is_work_order_stage
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_work_order_stage
+msgid ""
+"Check this if this stage belongs to the Technical Office group. Users in the"
+" Technical Office group will only see stages and leads marked with this "
+"flag."
+msgstr ""
+"حدد هذا إذا كانت هذه المرحلة تابعة لمجموعة أمر الشغل. المستخدمون في مجموعة "
+"أمر الشغل سيرون فقط المراحل والعملاء المحتملين الموسومين بهذه العلامة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_request_inspection
+msgid ""
+"Check this if this stage is the \"Request for Inspection\" stage. When a "
+"salesperson is assigned to a lead in this stage, the lead auto-transitions "
+"to the \"Preview Uploaded\" stage."
+msgstr ""
+"حدد هذا إذا كانت هذه المرحلة هي مرحلة \"طلب المعاينة\". عند تعيين مندوب "
+"مبيعات لعميل محتمل في هذه المرحلة، ينتقل تلقائياً إلى مرحلة \"تم رفع "
+"المعاينة\"."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_design_phase
+msgid "Check this if this stage represents the Design Phase."
+msgstr "حدد هذا إذا كانت هذه المرحلة تمثل مرحلة التصميم."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_followup
+msgid "Check this if this stage represents the Follow-up phase."
+msgstr "حدد هذا إذا كانت هذه المرحلة تمثل مرحلة المتابعة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__is_synthetic_inspection
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_synthetic_inspection
+msgid "Check this if this stage represents the Synthetic Inspection phase."
+msgstr "حدد هذا إذا كانت هذه المرحلة تمثل مرحلة المعاينة التركيبية."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__is_meeting_access
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_meeting_access
+msgid ""
+"Check this if this stage requires a meeting with the client before "
+"proceeding."
+msgstr "حدد هذا إذا كانت هذه المرحلة تتطلب اجتماعاً مع العميل قبل المتابعة."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_preview_uploaded
+msgid ""
+"Check this if uploading an attachment in this stage should automatically "
+"move the lead to the Design Phase stage."
+msgstr ""
+"حدد هذا إذا كان رفع مرفق في هذه المرحلة سيؤدي تلقائياً إلى نقل العميل "
+"المحتمل إلى مرحلة التصميم."
+
+#. module: crm_touch
+#: model:ir.model.fields.selection,name:crm_touch.selection__crm_meeting_action_wizard__action_type__contract
+msgid "Contract — Create Sales Order"
+msgstr "عقد — إنشاء أمر بيع"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__inspection_file
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__inspection_file_name
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_synthetic_inspection
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_lead_form_view_inherit_inspection
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_stage_form_view_inherit_crm_touch
+msgid "Contracts"
+msgstr "مرفقات المعاينة"
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.sale_order_form_view_inherit_crm_touch
+msgid "Create Activity & Add Note"
+msgstr "إنشاء نشاط وإضافة ملاحظة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__create_uid
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__create_date
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__create_date
+msgid "Created on"
+msgstr "تاريخ الإنشاء"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__current_stage_sequence
+msgid "Current Stage Sequence"
+msgstr "تسلسل المرحلة الحالية"
+
+#. module: crm_touch
+#: model:res.groups,name:crm_touch.group_crm_design_manager
+msgid "Design Manager"
+msgstr "مدير التصميم"
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_design_stage
+msgid ""
+"Design Managers will only see leads starting from this stage and any stages "
+"after it (based on sequence). Only Administrators can modify this setting."
+msgstr ""
+"مدراء التصميم سيرون فقط العملاء المحتملين ابتداءً من هذه المرحلة والمراحل "
+"التي بعدها (حسب التسلسل). المسؤولون فقط يمكنهم تعديل هذا الإعداد."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_design_phase
+msgid "Design Phase"
+msgstr "مرحلة التصميم"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__design_phase_user_id
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_stage_form_view_inherit_design_stage
+msgid "Design Phase Salesperson"
+msgstr "مندوب مبيعات مرحلة التصميم"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__display_name
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__display_name
+msgid "Display Name"
+msgstr "اسم العرض"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+#: code:addons/crm_touch/models/crm_place_inspection_wizard.py:0
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_followup
+msgid "Follow-up"
+msgstr "متابعة"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Follow-up Details"
+msgstr "تفاصيل المتابعة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__followup_notes
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__followup_notes
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Follow-up Notes"
+msgstr "ملاحظات المتابعة"
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Follow-up Scheduling"
+msgstr "جدولة المتابعة"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "Follow-up with client"
+msgstr "متابعة مع العميل"
+
+#. module: crm_touch
+#: model:ir.model.fields.selection,name:crm_touch.selection__crm_meeting_action_wizard__action_type__followup
+msgid "Follow-up — Schedule Meeting"
+msgstr "متابعة — جدولة اجتماع"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_place_inspection_wizard.py:0
+msgid "Follow-up — Site not equipped"
+msgstr "متابعة — الموقع غير مجهز"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__id
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: crm_touch
+#: model:res.groups,name:crm_touch.group_inspection_department
+msgid "Inspection Department"
+msgstr "قسم المعاينة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_inspection_stage
+msgid "Inspection Department Stage"
+msgstr "مرحلة قسم المعاينة"
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__is_installation_stage
+msgid "Installation Engineers can only see leads from this stage onwards."
+msgstr "مهندسو التركيب يمكنهم فقط رؤية العملاء المتوقعين من هذه المرحلة فصاعدًا."
+"مهندسو التركيبات يمكنهم فقط رؤية العملاء المحتملين من هذه المرحلة فصاعداً."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_installation_stage
+msgid "Installation Stage"
+msgstr "مرحلة التركيب"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_design_stage
+msgid "Is Design Stage Start"
+msgstr "بداية مرحلة التصميم"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__write_uid
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__write_date
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__write_date
+msgid "Last Updated on"
+msgstr "تاريخ آخر تحديث"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__inspection_upload_date
+msgid "Last Upload Date"
+msgstr "تاريخ آخر رفع"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__lead_id
+msgid "Lead"
+msgstr "العميل المحتمل"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__lead_id
+msgid "Lead / Opportunity"
+msgstr "العميل المحتمل / الفرصة"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead automatically moved from <strong>%s</strong> to <strong>%s</strong> "
+"because the Design Phase was completed."
+msgstr ""
+"تم نقل العميل المحتمل تلقائياً من <strong>%s</strong> إلى "
+"<strong>%s</strong> لأن مرحلة التصميم اكتملت."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid ""
+"Lead automatically moved to stage <strong>%s</strong> after Sales Order "
+"<strong>#%s</strong> was created."
+msgstr ""
+"تم نقل العميل المحتمل تلقائياً إلى مرحلة <strong>%s</strong> بعد إنشاء أمر "
+"البيع <strong>#%s</strong>."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead marked as <strong>Won</strong> automatically after Contracts files were"
+" confirmed."
+msgstr ""
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead marked as <strong>Won</strong> automatically after Reading Two Files "
+"was confirmed."
+msgstr ""
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid ""
+"Lead marked as <strong>Won</strong> automatically after Sales Order "
+"<strong>#%s</strong> was created."
+msgstr ""
+"تم تعليم العميل المحتمل <strong>مكتمل</strong> تلقائياً بعد إنشاء أمر البيع "
+"<strong>#%s</strong>."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead marked as <strong>Won</strong> automatically after inspection file was "
+"uploaded and saved."
+msgstr ""
+"تم تعليم العميل المحتمل <strong>مكتمل</strong> تلقائياً بعد رفع ملف المعاينة"
+" وحفظه."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead moved to <strong>%s</strong> automatically after Contracts attachment "
+"was uploaded."
+msgstr ""
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead moved to <strong>%s</strong> automatically after a salesperson was "
+"assigned."
+msgstr ""
+"تم نقل العميل المحتمل إلى <strong>%s</strong> تلقائياً بعد تعيين مندوب "
+"مبيعات."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"Lead moved to <strong>%s</strong> automatically after inspection file was "
+"uploaded and saved."
+msgstr ""
+"تم نقل العميل المحتمل إلى <strong>%s</strong> تلقائياً بعد رفع ملف المعاينة "
+"وحفظه."
+
+#. module: crm_touch
+#: model:ir.model,name:crm_touch.model_crm_lead
+msgid "Lead/Opportunity"
+msgstr "عميل مهتم/فرصة "
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_stage__design_phase_user_id
+msgid ""
+"Leads entering this Design Phase stage will automatically send an email "
+"notification to this user."
+msgstr ""
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__lost_reason_id
+msgid "Lost Reason"
+msgstr "سبب الخسارة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__is_meeting_access
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__is_meeting_access
+msgid "Meeting Access"
+msgstr "وصول الاجتماع"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_lead_form_view_inherit_meeting_btn
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+msgid "Meeting Actions"
+msgstr "إجراءات الاجتماع"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "Meeting actions are not available for this stage."
+msgstr "إجراءات الاجتماع غير متاحة لهذه المرحلة."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_meeting_access
+msgid "Meeting with Client"
+msgstr "اجتماع مع العميل"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "New Sales Order"
+msgstr "أمر بيع جديد"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_meeting_action_wizard__next_followup_date
+#: model:ir.model.fields,field_description:crm_touch.field_crm_place_inspection_wizard__next_followup_date
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Next Follow-up Date"
+msgstr "تاريخ المتابعة القادمة"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid ""
+"No Follow-up stage found. Please configure a stage with the \"Follow-up\" "
+"checkbox enabled first."
+msgstr ""
+"لم يتم العثور على مرحلة متابعة. يرجى تكوين مرحلة مع تفعيل خيار \"متابعة\" "
+"أولاً."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__no_response
+msgid "No Response"
+msgstr "لم يرد"
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_meeting_action_wizard_form_view
+msgid "Open Sales Order Form"
+msgstr "فتح نموذج أمر البيع"
+
+#. module: crm_touch
+#: model:res.groups,name:crm_touch.group_operations_department
+msgid "Operations Department"
+msgstr "قسم العمليات"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_operations_stage
+msgid "Operations Department Stage"
+msgstr "مرحلة قسم العمليات"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__pending_followup_date
+msgid "Pending Follow-up Date"
+msgstr "تاريخ المتابعة المعلق"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__pending_followup_notes
+msgid "Pending Follow-up Notes"
+msgstr "ملاحظات المتابعة المعلقة"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid ""
+"Place not equipped — lead moved to <strong>%s</strong> after SO "
+"<strong>#%s</strong>."
+msgstr ""
+"المكان غير مجهز — تم نقل العميل المحتمل إلى <strong>%s</strong> بعد أمر "
+"البيع <strong>#%s</strong>."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "Please add follow-up notes before scheduling the meeting."
+msgstr "يرجى إضافة ملاحظات المتابعة قبل جدولة الاجتماع."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_place_inspection_wizard.py:0
+msgid "Please add follow-up notes."
+msgstr "يرجى إضافة ملاحظات المتابعة."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid "Please link a CRM lead first."
+msgstr "يرجى ربط عميل محتمل أولاً."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "Please select a lost reason before cancelling."
+msgstr "يرجى اختيار سبب الخسارة قبل الإلغاء."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "Please select an action type."
+msgstr "يرجى اختيار نوع الإجراء."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid ""
+"Please select either \"The Place is Equipped\" or \"The Place is Not "
+"Equipped\" before saving."
+msgstr "يرجى اختيار إما \"المكان مجهز\" أو \"المكان غير مجهز\" قبل الحفظ."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+#: code:addons/crm_touch/models/crm_place_inspection_wizard.py:0
+msgid "Please set the next follow-up date."
+msgstr "يرجى تحديد تاريخ المتابعة القادمة."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_preview_uploaded
+msgid "Preview Uploaded"
+msgstr "تم رفع المعاينة"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__reading_two_files
+msgid "Reading Two Files"
+msgstr "قراءة الملفين"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_request_inspection
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_stage_form_view_inherit_design_stage
+msgid "Request for Inspection"
+msgstr "طلب المعاينة"
+
+#. module: crm_touch
+#: model:res.groups,name:crm_touch.group_sales
+msgid "Sales"
+msgstr "المبيعات"
+
+#. module: crm_touch
+#: model:ir.model,name:crm_touch.model_sale_order
+msgid "Sales Order"
+msgstr "أمر البيع"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid ""
+"Sales Order <strong>%s</strong> was created but the lead could not be marked"
+" as Won because no inspection file has been uploaded yet."
+msgstr ""
+"تم إنشاء أمر البيع <strong>%s</strong> ولكن لم يتم تعليم العميل المحتمل "
+"كمكتمل لأنه لم يتم رفع ملف معاينة بعد."
+
+#. module: crm_touch
+#: model:res.groups,name:crm_touch.group_sales_person
+msgid "Sales Person"
+msgstr "مندوب المبيعات"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_sales_person_stage
+msgid "Sales Person Stage"
+msgstr "مرحلة مندوب المبيعات"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_sales_stage
+msgid "Sales Stage"
+msgstr "مرحلة المبيعات"
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_place_inspection_wizard_form_view
+msgid "Save & Close"
+msgstr "حفظ وإغلاق"
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.sale_order_form_view_inherit_crm_touch
+msgid "Select inspection result (required before saving):"
+msgstr "اختر نتيجة المعاينة (مطلوب قبل الحفظ):"
+
+#. module: crm_touch
+#: model:mail.template,description:crm_touch.mail_template_crm_lead_assigned
+msgid "Sent automatically to salesperson when assigned to a new CRM lead"
+msgstr "يتم الإرسال تلقائيًا إلى مندوب المبيعات عند تعيينه لعميل متوقع جديد"
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__assigned_stage_sequence
+msgid ""
+"Sequence of the stage at the moment the salesperson was assigned.  0 = never"
+" assigned or assignment cleared. Used by _search to hide the lead when it "
+"moves backward."
+msgstr ""
+"تسلسل المرحلة لحظة تعيين مندوب المبيعات. 0 = لم يتم التعيين أو تم إلغاء "
+"التعيين. يستخدم لإخفاء العميل المحتمل عند التراجع لمرحلة سابقة."
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.sale_order_form_view_inherit_crm_touch
+msgid "Site Inspection"
+msgstr "معاينة الموقع"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__is_synthetic_inspection
+msgid "Synthetic Inspection"
+msgstr "المعاينة التركيبية"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+#: code:addons/crm_touch/models/models.py:0
+msgid "System Notification"
+msgstr "إشعار النظام"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__is_work_order_trigger
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__work_order_attachment
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_work_order_trigger
+#: model:res.groups,name:crm_touch.group_work_order
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_lead_form_view_work_order
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_stage_form_view_inherit_design_stage
+msgid "Technical Office"
+msgstr "معاينة التركيب"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__is_work_order_stage
+#: model:ir.model.fields,field_description:crm_touch.field_crm_stage__is_work_order_stage
+msgid "Technical Office Stage"
+msgstr "مرحلة أمر الشغل"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_sale_order__is_place_equipped
+msgid "The Place is Equipped"
+msgstr "المكان مجهز"
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_sale_order__is_place_not_equipped
+msgid "The Place is Not Equipped"
+msgstr "المكان غير مجهز"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_meeting_wizard.py:0
+msgid "The lead must have a customer set before creating a Sales Order."
+msgstr "يجب أن يكون للعميل المحتمل عميل محدد قبل إنشاء أمر البيع."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"The lead must have at least one Sales Order / Quotation before moving to the"
+" \"%s\" stage."
+msgstr ""
+"يجب أن يكون للعميل المحتمل أمر بيع / عرض سعر واحد على الأقل قبل الانتقال إلى"
+" مرحلة \"%s\"."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__inspection_file
+msgid "Upload Contracts files."
+msgstr "رفع ملفات المعاينة."
+
+#. module: crm_touch
+#: model_terms:ir.ui.view,arch_db:crm_touch.crm_lead_form_view_inherit_inspection
+msgid "Upload Date"
+msgstr "تاريخ الرفع"
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__work_order_attachment
+msgid "Upload Technical Office files here."
+msgstr "رفع ملفات المكتب الفني هنا."
+"ارفع ملف أمر الشغل هنا. عند الرفع في مرحلة أمر الشغل، ينتقل العميل المحتمل "
+"تلقائياً إلى مكتمل."
+
+#. module: crm_touch
+#: model:ir.model.fields,help:crm_touch.field_crm_lead__current_stage_sequence
+msgid "Used to order stages. Lower is better."
+msgstr "يستخدم لترتيب المراحل. الأقل أفضل."
+
+#. module: crm_touch
+#: model:res.groups,comment:crm_touch.group_crm_design_manager
+msgid ""
+"Users in this group can only see CRM leads starting from the Design Stage "
+"(is_design_stage) onwards."
+msgstr ""
+"المستخدمون في هذه المجموعة يمكنهم فقط رؤية العملاء المحتملين\n"
+"            ابتداءً من مرحلة التصميم (is_design_stage) فصاعداً."
+
+#. module: crm_touch
+#: model:res.groups,comment:crm_touch.group_inspection_department
+msgid ""
+"Users in this group can only see CRM stages and leads marked as Inspection "
+"Department Stage."
+msgstr ""
+"المستخدمون في هذه المجموعة يمكنهم فقط رؤية مراحل وعملاء محتملين موسومين "
+"كمرحلة قسم المعاينة."
+
+#. module: crm_touch
+#: model:res.groups,comment:crm_touch.group_operations_department
+msgid ""
+"Users in this group can only see CRM stages and leads marked as Operations "
+"Department Stage."
+msgstr ""
+"المستخدمون في هذه المجموعة يمكنهم فقط رؤية مراحل وعملاء محتملين موسومين "
+"كمرحلة قسم العمليات."
+
+#. module: crm_touch
+#: model:res.groups,comment:crm_touch.group_sales_person
+msgid ""
+"Users in this group can only see CRM stages and leads marked as Sales Person"
+" Stage."
+msgstr ""
+"المستخدمون في هذه المجموعة يمكنهم فقط رؤية مراحل وعملاء محتملين موسومين "
+"كمرحلة مندوب المبيعات."
+
+#. module: crm_touch
+#: model:res.groups,comment:crm_touch.group_sales
+msgid ""
+"Users in this group can only see CRM stages and leads marked as Sales Stage."
+msgstr ""
+"المستخدمون في هذه المجموعة يمكنهم فقط رؤية مراحل وعملاء محتملين موسومين "
+"كمرحلة المبيعات."
+
+#. module: crm_touch
+#: model:res.groups,comment:crm_touch.group_work_order
+msgid ""
+"Users in this group can only see CRM stages and leads marked as Technical "
+"Office Stage."
+msgstr ""
+"المستخدمون في هذه المجموعة يمكنهم فقط رؤية مراحل وعملاء محتملين موسومين "
+"كمرحلة أمر الشغل."
+
+#. module: crm_touch
+#: model:ir.model.fields,field_description:crm_touch.field_crm_lead__is_won_stage
+msgid "Won Stage"
+msgstr "مرحلة مكتمل"
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"You do not have permission to modify leads in stages before the Design "
+"Stage."
+msgstr "ليس لديك صلاحية لتعديل العملاء المحتملين في مراحل قبل مرحلة التصميم."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/crm_lead.py:0
+msgid ""
+"You do not have permission to modify leads in stages before the Meeting with"
+" Client stage."
+msgstr ""
+"ليس لديك صلاحية لتعديل العملاء المحتملين في مراحل قبل مرحلة اجتماع مع "
+"العميل."
+
+#. module: crm_touch
+#. odoo-python
+#: code:addons/crm_touch/models/models.py:0
+msgid ""
+"You must add at least one Product, Section, or Note to the Sales Order "
+"before saving."
+msgstr ""
+"يجب إضافة منتج أو قسم أو ملاحظة واحدة على الأقل إلى أمر البيع قبل الحفظ."
+
+#. module: crm_touch
+#: model:mail.template,subject:crm_touch.mail_template_crm_lead_assigned
+msgid "{{ object.company_id.name }} CRM Lead ({{ object.name or 'n/a' }})"
+msgstr "{{ object.company_id.name }} عميل متوقع ({{ object.name or 'n/a' }})"

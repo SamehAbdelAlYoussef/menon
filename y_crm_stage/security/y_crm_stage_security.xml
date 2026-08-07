@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Define the new user group -->
+        <record id="y_group_restricted_stage" model="res.groups">
+            <field name="name">CRM / Restricted Stage manager</field>
+            <field name="category_id" ref="base.module_category_sales_sales"/>
+            <field name="comment">Users in this group will only be able to see CRM stages marked as Restricted.</field>
+        </record>
+
+        <record id="y_group_restricted_stage_designer" model="res.groups">
+            <field name="name">CRM / Restricted Stage Designer</field>
+            <field name="category_id" ref="base.module_category_sales_sales"/>
+            <field name="comment">Users in this group will only be able to see CRM stages marked as Restricted.</field>
+        </record>
+
+        <!-- Record Rule for the group -->
+        <!-- <record id="y_rule_crm_stage_restricted" model="ir.rule">
+            <field name="name">Restricted CRM Stages Visibility</field>
+            <field name="model_id" ref="crm.model_crm_stage"/>
+            <field name="groups" eval="[(4, ref('y_crm_stage.y_group_restricted_stage'))]"/>
+            <field name="domain_force">[('y_is_restricted_stage', '=', True)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record> -->
+
+        
+    </data>
+</odoo>

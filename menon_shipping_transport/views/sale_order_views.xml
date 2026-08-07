@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_order_form_inherit_shipping_transport" model="ir.ui.view">
+        <field name="name">sale.order.form.inherit.shipping.transport</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Customer Phone: add right after Customer field -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="customer_phone" widget="phone"/>
+            </xpath>
+
+            <!-- Move Salesperson from Other Info to below Quotation Template -->
+            <!-- Hide from original location -->
+            <xpath expr="//group[@name='sales_person']//field[@name='user_id']" position="replace">
+            </xpath>
+
+            <!-- Add Salesperson + phone after Delivery Address (under Quotation Template) -->
+            <xpath expr="//field[@name='partner_shipping_id']" position="after">
+                <field name="user_id" widget="many2one_avatar_user"/>
+                <field name="salesperson_phone" widget="phone"/>
+            </xpath>
+
+            <!-- Add button and total below order lines, same place as Add Shipping -->
+            <xpath expr="//div[@name='so_button_below_order_lines']" position="inside">
+                <div class="d-flex align-items-center gap-1">
+                    <button string="المشال والشحن"
+                            name="action_open_shipping_transport_wizard"
+                            type="object"
+                            class="btn btn-secondary"/>
+                </div>
+            </xpath>
+
+            <!-- Add notebook page for shipping transport records -->
+            <xpath expr="//page[@name='order_lines']" position="after">
+                <page string="المشال والشحن" name="shipping_transport">
+                    <group>
+                        <group>
+                            <field name="shipping_transport_total" string="الإجمالي"/>
+                        </group>
+                    </group>
+                    <field name="shipping_transport_line_ids">
+                        <list editable="bottom" string="سجلات المشال والشحن">
+                            <field name="amount" string="القيمة"/>
+                            <field name="create_uid" string="بواسطة"/>
+                            <field name="create_date" string="التاريخ"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

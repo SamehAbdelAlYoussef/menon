@@ -1,0 +1,15 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_crm_meeting_action_wizard_user,crm.meeting.action.wizard user,model_crm_meeting_action_wizard,base.group_user,1,1,1,1
+access_crm_place_inspection_wizard_user,crm.place.inspection.wizard user,model_crm_place_inspection_wizard,base.group_user,1,1,1,1
+access_sale_order_work_order_block,sale.order.work.order.block,model_sale_order,group_work_order,1,0,0,0
+access_sale_order_operations_block,sale.order.operations.block,model_sale_order,group_operations_department,1,0,0,0
+access_sale_order_inspection_block,sale.order.inspection.block,model_sale_order,group_inspection_department,1,0,0,0
+access_sale_order_design_manager_block,sale.order.design.manager.block,model_sale_order,group_crm_design_manager,1,0,0,0
+access_sale_order_sales_person_block,sale.order.sales.person.block,model_sale_order,group_sales_person,1,0,0,0
+access_sale_order_sales_block,sale.order.sales.block,model_sale_order,group_sales,1,0,0,0
+access_crm_lead_work_order,crm.lead.work.order,model_crm_lead,group_work_order,1,1,1,1
+access_crm_lead_operations,crm.lead.operations,model_crm_lead,group_operations_department,1,1,1,1
+access_crm_lead_inspection,crm.lead.inspection,model_crm_lead,group_inspection_department,1,1,1,1
+access_crm_lead_design_manager,crm.lead.design.manager,model_crm_lead,group_crm_design_manager,1,1,1,1
+access_crm_lead_sales_person,crm.lead.sales.person,model_crm_lead,group_sales_person,1,1,1,1
+access_crm_lead_sales,crm.lead.sales,model_crm_lead,group_sales,1,1,1,1

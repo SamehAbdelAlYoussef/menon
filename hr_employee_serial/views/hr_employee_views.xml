@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Inherit the employee form view to add serial number after job_id -->
+    <record id="view_employee_form_inherit_serial" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.serial</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+
+            <!-- Add employee_serial field after job_id in the Work Information tab -->
+            <!-- field element inheritance targets the first job_id occurrence (the one in the main group) -->
+            <field name="job_title" position="after">
+                <field name="employee_serial" placeholder="employee serial"/>
+            </field>
+
+        </field>
+    </record>
+
+</odoo>

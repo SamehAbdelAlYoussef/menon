@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Ensure CRM menu is visible to all internal users -->
+        <record id="crm.crm_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_crm_design_manager" model="res.groups">
+            <field name="name">Design Manager</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM leads starting from the Design Stage (is_design_stage) onwards.</field>
+        </record>
+
+        <record id="rule_crm_lead_design_manager" model="ir.rule">
+            <field name="name">Design Manager: Leads from Design Stage</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_crm_design_manager'))]"/>
+            <field name="domain_force">[('stage_id.is_design_stage', '=', True)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Installation Engineer group hidden per user request -->
+        <!--
+        <record id="group_crm_installation_engineer" model="res.groups">
+            <field name="name">Installation Engineer</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM leads starting from the Meeting with Client stage onwards.</field>
+        </record>
+
+        <record id="rule_crm_lead_installation_engineer" model="ir.rule">
+            <field name="name">Installation Engineer: Leads from Meeting Stage</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_crm_installation_engineer'))]"/>
+            <field name="domain_force">['|', ('user_id', '=', user.id), ('create_uid', '=', user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+        -->
+
+
+        <record id="rule_crm_lead_own_records" model="ir.rule">
+            <field name="name">CRM Lead: See own and assigned records (Allowed Stages Only)</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>
+            <field name="domain_force">[
+                '&amp;',
+                '|', ('user_id', '=', user.id), ('create_uid', '=', user.id),
+                '&amp;',
+                '&amp;',
+                ('stage_id.is_design_stage', '=', False),
+                ('stage_id.is_meeting_access', '=', False),
+                '&amp;',
+                ('stage_id.is_synthetic_inspection', '=', False),
+                ('stage_id.is_won', '=', False)
+            ]</field>
+            <field name="perm_read"   eval="True"/>
+            <field name="perm_write"  eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- ── Inspection Department ──────────────────────────────── -->
+
+        <record id="group_inspection_department" model="res.groups">
+            <field name="name">Inspection Department</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM stages and leads marked as Inspection Department Stage.</field>
+        </record>
+
+        <record id="rule_crm_lead_inspection" model="ir.rule">
+            <field name="name">Inspection Department: Leads in Inspection Stages Only</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_inspection_department'))]"/>
+            <field name="domain_force">[('stage_id.is_inspection_stage', '=', True)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ── Operations Department ──────────────────────────────── -->
+
+        <record id="group_operations_department" model="res.groups">
+            <field name="name">Operations Department</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM stages and leads marked as Operations Department Stage.</field>
+        </record>
+
+        <record id="rule_crm_lead_operations" model="ir.rule">
+            <field name="name">Operations Department: Leads in Operations Stages Only</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_operations_department'))]"/>
+            <field name="domain_force">[('stage_id.is_operations_stage', '=', True)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ── Sales Person ──────────────────────────────────────── -->
+
+        <record id="group_sales_person" model="res.groups">
+            <field name="name">Sales Person</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM stages and leads marked as Sales Person Stage.</field>
+        </record>
+
+        <record id="rule_crm_lead_sales_person" model="ir.rule">
+            <field name="name">Sales Person: Leads in Sales Person Stages Only</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_sales_person'))]"/>
+            <field name="domain_force">[('stage_id.is_sales_person_stage', '=', True)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ── Sales ──────────────────────────────────────────────── -->
+
+        <record id="group_sales" model="res.groups">
+            <field name="name">Sales</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM stages and leads marked as Sales Stage.</field>
+        </record>
+
+        <record id="rule_crm_lead_sales" model="ir.rule">
+            <field name="name">Sales: Leads in Sales Stages Only</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_sales'))]"/>
+            <field name="domain_force">[('stage_id.is_sales_stage', '=', True)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- ── Technical Office ──────────────────────────────────── -->
+
+        <record id="group_work_order" model="res.groups">
+            <field name="name">Technical Office</field>
+            <field name="category_id" ref="base.module_category_sales_crm"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+            <field name="comment">Users in this group can only see CRM stages and leads marked as Technical Office Stage.</field>
+        </record>
+
+        <record id="rule_crm_lead_work_order" model="ir.rule">
+            <field name="name">Technical Office: Leads in Technical Office Stages Only</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="groups" eval="[(4, ref('group_work_order'))]"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+        </record>
+
+        <!-- Technical Office group: block access to Sale Orders (empty domain) -->
+        <!-- Hide Sales root menu from Technical Office group -->
+        <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(6, 0, [
+                ref('sales_team.group_sale_salesman'),
+                ref('sales_team.group_sale_manager'),
+                ref('base.group_system'),
+            ])]"/>
+        </record>
+
+    </data>
+</odoo>
