@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_taqseet_companies_list" model="ir.ui.view">
+        <field name="name">account.account.taqseet.report.list</field>
+        <field name="model">account.account</field>
+        <field name="arch" type="xml">
+            <list string="Installment Companies Report" create="false" edit="true" delete="false">
+                <header>
+                    <button name="%(custome_accounting_menon.action_taqseet_excel_wizard)d"
+                            string="Export Excel"
+                            type="action"
+                            class="btn-success"/>
+                </header>
+                <field name="name" string="Company" readonly="1"/>
+                <field name="current_balance" string="Balance" readonly="1" sum="Total"/>
+                <field name="taqseet_account_balance" string="Administrative Expenses" readonly="1" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_taqseet_companies_report" model="ir.actions.act_window">
+        <field name="name">Installment Companies Report</field>
+        <field name="res_model">account.account</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('is_taqseet_company', '=', True)]</field>
+        <field name="view_id" ref="view_taqseet_companies_list"/>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <menuitem
+        id="menu_taqseet_companies_report"
+        name="Installment Companies Report"
+        parent="account.menu_finance_reports"
+        action="action_taqseet_companies_report"
+        sequence="100"/>
+
+</odoo>

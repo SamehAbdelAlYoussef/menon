@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates>
+
+    <t t-name="custome_accounting_menon.AccountReportFilterAccount">
+        <Dropdown menuClass="'account_report_filter filter_account'">
+            <button class="btn btn-secondary">
+                <i class="fa fa-filter me-1"/>
+                Filter by Account
+                <t t-if="controller.options.selected_account_names and controller.options.selected_account_names.length">
+                    <span class="badge bg-primary ms-1">
+                        <t t-esc="controller.options.selected_account_names.length"/>
+                    </span>
+                </t>
+            </button>
+            <t t-set-slot="content">
+                <div style="min-width: 360px; padding: 0;">
+
+                    <div style="background:#f8f9fa;border-bottom:1px solid #e9ecef;padding:10px 14px 8px;display:flex;align-items:center;gap:8px;">
+                        <i class="fa fa-filter" style="color:#6c757d;font-size:13px;"/>
+                        <span style="font-size:13px;font-weight:600;color:#495057;">
+                            Filter by Account
+                        </span>
+                    </div>
+
+                    <div style="padding:8px 14px 4px;font-size:11px;color:#6c757d;">
+                        Search by account name or code to filter the report
+                    </div>
+
+                    <div class="dropdown-item" style="padding:4px 14px 12px;">
+                        <MultiRecordSelector
+                            t-props="getMultiRecordSelectorProps('account.account', 'account_ids')"
+                            placeholder="'Search by name or code...'"
+                        />
+                    </div>
+
+                    <t t-if="controller.options.selected_account_names and controller.options.selected_account_names.length">
+                        <div style="border-top:1px solid #e9ecef;padding:6px 14px;font-size:11px;color:#6c757d;background:#f8f9fa;">
+                            <i class="fa fa-check-circle me-1" style="color:#198754;"/>
+                            <t t-esc="controller.options.selected_account_names.length"/>
+                            account(s) selected — table is now filtered
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div style="border-top:1px solid #e9ecef;padding:6px 14px;font-size:11px;color:#adb5bd;background:#f8f9fa;font-style:italic;">
+                            No account selected — showing all accounts
+                        </div>
+                    </t>
+
+                </div>
+            </t>
+        </Dropdown>
+    </t>
+
+    <t t-name="account_reports.AccountReportFiltersCustomizable"
+       t-inherit="account_reports.AccountReportFiltersCustomizable"
+       t-inherit-mode="extension">
+        <xpath expr="//div[@id='filter_rounding_unit']" position="before">
+            <t t-if="controller.filters.show_filter_accounts">
+                <div id="filter_account">
+                    <t t-call="custome_accounting_menon.AccountReportFilterAccount"/>
+                </div>
+            </t>
+        </xpath>
+    </t>
+
+    <t t-name="custome_accounting_menon.warning_no_account_data">
+        <div class="d-flex flex-column align-items-center py-4 gap-3">
+
+            <div style="width:64px;height:64px;background:#fff3cd;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                <i class="fa fa-search fa-2x" style="color:#e6a817;"/>
+            </div>
+
+            <div class="fw-bold fs-5 text-dark">
+                No entries found for the selected accounts
+            </div>
+
+            <t t-if="controller.options.selected_account_names and controller.options.selected_account_names.length">
+                <div class="text-muted text-center" style="font-size:13px;">
+                    The following accounts have no journal entries in the selected period:
+                    <div class="mt-2 d-flex flex-wrap justify-content-center gap-1">
+                        <t t-foreach="controller.options.selected_account_names" t-as="acc" t-key="acc_index">
+                            <span class="badge rounded-pill" style="background:#fef3cd;color:#856404;font-size:12px;font-weight:500;padding:4px 10px;">
+                                <i class="fa fa-file-text-o me-1"/>
+                                <t t-esc="acc"/>
+                            </span>
+                        </t>
+                    </div>
+                </div>
+            </t>
+
+            <div class="text-muted" style="font-size:12px;">
+                Try selecting a different date range or choose accounts with existing transactions.
+            </div>
+
+            <button
+                class="btn btn-sm"
+                style="background:#fff3cd;border:1px solid #e6a817;color:#856404;font-weight:500;"
+                t-on-click="() => { controller.updateOption('account_ids', []); controller.reload('account_ids', controller.options); }"
+            >
+                <i class="fa fa-times me-1"/>
+                Clear Account Filter
+            </button>
+
+        </div>
+    </t>
+
+</templates>

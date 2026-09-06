@@ -11,6 +11,10 @@
                             type="object"
                             string="📊 Report"
                             class="btn-primary"/>
+                    <button name="restore_out_leads"
+                            type="object"
+                            string="🔄 استرجاع Out"
+                            class="btn-warning"/>
                 </xpath>
             </field>
         </record>
@@ -35,6 +39,7 @@
                             <field name="visit_date"/>
                             <field name="visit_time" widget="time"/>
                             <field name="is_out"/>
+                            <field name="lost_reason_id" invisible="not is_out" required="is_out"/>
                         </group>
                     </group>
                     <group>

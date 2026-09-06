@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models
-from odoo.tools import format_amount
+
+SHIPPING_TRANSPORT_PRODUCT_XMLID = 'menon_shipping_transport.product_shipping_transport_service'
 
 
 class SaleOrder(models.Model):
@@ -34,46 +35,27 @@ class SaleOrder(models.Model):
         for order in self:
             order.shipping_transport_total = sum(line.amount for line in order.shipping_transport_line_ids)
 
-    @api.depends(
-        'order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id',
-        'shipping_transport_total',
-    )
-    def _compute_amounts(self):
-        super()._compute_amounts()
+    def _sync_shipping_transport_order_line(self):
+        """Keep a single order line in sync with shipping_transport_total, using the
+        dedicated service product so it flows through the normal totals/tax computation."""
+        product_tmpl = self.env.ref(SHIPPING_TRANSPORT_PRODUCT_XMLID, raise_if_not_found=False)
+        product = product_tmpl.product_variant_id if product_tmpl else False
+        if not product:
+            return
         for order in self:
-            order.amount_total += order.shipping_transport_total
-
-    @api.depends(
-        'order_line.price_subtotal', 'currency_id', 'company_id', 'payment_term_id',
-        'shipping_transport_total',
-    )
-    def _compute_tax_totals(self):
-        super()._compute_tax_totals()
-        for order in self:
-            if order.shipping_transport_total:
-                currency = order.currency_id or order.company_id.currency_id
-                # Add to total
-                order.tax_totals['total_amount_currency'] += order.shipping_transport_total
-                order.tax_totals['formatted_amount_total'] = format_amount(
-                    self.env, order.tax_totals['total_amount_currency'], currency
-                )
-                # Inject "المشال والشحن" line in the first subtotal
-                if order.tax_totals.get('subtotals'):
-                    subtotal = order.tax_totals['subtotals'][0]
-                    shipping_tax_group = {
-                        'id': False,
-                        'involved_tax_ids': [],
-                        'tax_amount_currency': order.shipping_transport_total,
-                        'tax_amount': 0.0,
-                        'base_amount_currency': 0.0,
-                        'base_amount': 0.0,
-                        'display_base_amount_currency': False,
-                        'display_base_amount': False,
-                        'group_name': 'المشال والشحن',
-                        'group_label': 'المشال والشحن',
-                    }
-                    subtotal['tax_groups'].append(shipping_tax_group)
-                    subtotal['tax_amount_currency'] += order.shipping_transport_total
+            line = order.order_line.filtered(lambda l: l.product_id.id == product.id)
+            if not order.shipping_transport_total:
+                line.unlink()
+                continue
+            if line:
+                line.price_unit = order.shipping_transport_total
+            else:
+                self.env['sale.order.line'].create({
+                    'order_id': order.id,
+                    'product_id': product.id,
+                    'product_uom_qty': 1,
+                    'price_unit': order.shipping_transport_total,
+                })
 
     def action_open_shipping_transport_wizard(self):
         self.ensure_one()
@@ -111,3 +93,36 @@ class SaleOrderShippingTransportLine(models.Model):
     company_id = fields.Many2one(
         related='order_id.company_id',
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        lines.order_id._sync_shipping_transport_order_line()
+        return lines
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'amount' in vals:
+            self.order_id._sync_shipping_transport_order_line()
+        return res
+
+    def unlink(self):
+        orders = self.order_id
+        res = super().unlink()
+        orders._sync_shipping_transport_order_line()
+        return res
+
+
+class SaleOrderLine(models.Model):
+    _inherit = 'sale.order.line'
+
+    is_shipping_transport_line = fields.Boolean(
+        compute='_compute_is_shipping_transport_line',
+    )
+
+    @api.depends('product_id')
+    def _compute_is_shipping_transport_line(self):
+        product_tmpl = self.env.ref(SHIPPING_TRANSPORT_PRODUCT_XMLID, raise_if_not_found=False)
+        product = product_tmpl.product_variant_id if product_tmpl else False
+        for line in self:
+            line.is_shipping_transport_line = bool(product) and line.product_id.id == product.id

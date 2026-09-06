@@ -1,0 +1,204 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* custome_accounting_menon
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0+e-20260603\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-05 20:21+0000\n"
+"PO-Revision-Date: 2026-09-05 20:21+0000\n"
+"Last-Translator: \n"
+"Language-Team: Arabic\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
+
+#. module: custome_accounting_menon
+#: model:ir.actions.report,print_report_name:custome_accounting_menon.action_report_taqseet_pdf
+msgid "'Installment_Companies_Report'"
+msgstr "'تقرير_شركات_التقسيط'"
+
+#. module: custome_accounting_menon
+#: model:ir.model,name:custome_accounting_menon.model_account_account
+msgid "Account"
+msgstr "الحساب"
+
+#. module: custome_accounting_menon
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_account_form_taqseet
+msgid "Account Balance"
+msgstr "رصيد الحساب"
+
+#. module: custome_accounting_menon
+#: model:ir.model,name:custome_accounting_menon.model_account_report
+msgid "Accounting Report"
+msgstr "تقرير المحاسبة"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_account_account__taqseet_account_balance
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.report_taqseet_companies_document
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_companies_list
+msgid "Administrative Expenses"
+msgstr "مصروفات إدارية"
+
+#. module: custome_accounting_menon
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.report_taqseet_companies_document
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_companies_list
+msgid "Balance"
+msgstr "الرصيد"
+
+#. module: custome_accounting_menon
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_excel_wizard_form
+msgid "Close"
+msgstr "إغلاق"
+
+#. module: custome_accounting_menon
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.report_taqseet_companies_document
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_companies_list
+msgid "Company"
+msgstr "الشركة"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__create_uid
+msgid "Created by"
+msgstr "أنشئ بواسطة"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__create_date
+msgid "Created on"
+msgstr "أنشئ في"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__display_name
+msgid "Display Name"
+msgstr "الاسم المعروض"
+
+#. module: custome_accounting_menon
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_excel_wizard_form
+msgid "Download Excel"
+msgstr "تحميل Excel"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__excel_file
+msgid "Excel File"
+msgstr "ملف Excel"
+
+#. module: custome_accounting_menon
+#: model:ir.actions.act_window,name:custome_accounting_menon.action_taqseet_excel_wizard
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_companies_list
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_excel_wizard_form
+msgid "Export Excel"
+msgstr "تصدير Excel"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__file_name
+msgid "File Name"
+msgstr "اسم الملف"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_account_report__filter_accounts
+msgid "Filter by Accounts"
+msgstr "تصفية حسب الحسابات"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "Filter by Account"
+msgstr "تصفية حسب الحساب"
+
+#. module: custome_accounting_menon
+#: model:ir.model,name:custome_accounting_menon.model_account_general_ledger_report_handler
+msgid "General Ledger Custom Handler"
+msgstr "المعالج المخصص لدفتر الأستاذ العام"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__id
+msgid "ID"
+msgstr "المعرف"
+
+#. module: custome_accounting_menon
+#: model:ir.model,name:custome_accounting_menon.model_taqseet_excel_wizard
+msgid "Installment Companies Excel Export"
+msgstr "تصدير Excel لشركات التقسيط"
+
+#. module: custome_accounting_menon
+#: model:ir.actions.act_window,name:custome_accounting_menon.action_taqseet_companies_report
+#: model:ir.actions.report,name:custome_accounting_menon.action_report_taqseet_pdf
+#: model:ir.ui.menu,name:custome_accounting_menon.menu_taqseet_companies_report
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_companies_list
+msgid "Installment Companies Report"
+msgstr "تقرير حسابات شركات التقسيط"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_account_account__is_taqseet_company
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_account_form_taqseet
+msgid "Installment Company"
+msgstr "شركة تقسيط"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_account_account__taqseet_account_id
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_account_form_taqseet
+msgid "Installment Company Account"
+msgstr "حساب شركة التقسيط"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__write_uid
+msgid "Last Updated by"
+msgstr "آخر تحديث بواسطة"
+
+#. module: custome_accounting_menon
+#: model:ir.model.fields,field_description:custome_accounting_menon.field_taqseet_excel_wizard__write_date
+msgid "Last Updated on"
+msgstr "آخر تحديث في"
+
+#. module: custome_accounting_menon
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.report_taqseet_companies_document
+#: model_terms:ir.ui.view,arch_db:custome_accounting_menon.view_taqseet_companies_list
+msgid "Total"
+msgstr "الإجمالي"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "Clear Account Filter"
+msgstr "مسح فلتر الحساب"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "No account selected — showing all accounts"
+msgstr "لم يتم تحديد حساب — عرض جميع الحسابات"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "No entries found for the selected accounts"
+msgstr "لا توجد قيود للحسابات المحددة"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "Search by account name or code to filter the report"
+msgstr "ابحث باسم الحساب أو الرمز لتصفية التقرير"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "The following accounts have no journal entries in the selected period:"
+msgstr "الحسابات التالية لا تحتوي على قيود في الفترة المحددة:"
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid ""
+"Try selecting a different date range or choose accounts with existing "
+"transactions."
+msgstr "جرّب تحديد نطاق تاريخ مختلف أو اختر حسابات تحتوي على معاملات."
+
+#. module: custome_accounting_menon
+#. odoo-javascript
+#: code:addons/custome_accounting_menon/static/src/components/filter_account/filter_account.xml:0
+msgid "account(s) selected — table is now filtered"
+msgstr "حساب/حسابات محددة — الجدول مُصفّى الآن"

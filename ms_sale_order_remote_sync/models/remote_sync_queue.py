@@ -231,3 +231,4 @@ class RemoteSyncQueue(models.Model):
             'local_id': payment_id,
             'operation': 'unlink',
         })
+

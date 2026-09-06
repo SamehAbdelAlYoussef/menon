@@ -138,13 +138,24 @@ class AccountPayment(models.Model):
 
         # 5. Create remotely
         remote_id = config._call_kw('account.payment', 'create', args=[payment_vals])
-        if remote_id:
-            self.env['remote.sync.mapping'].set_mapping('account.payment', self.id, remote_id)
-            _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
-            return True
+        if not remote_id:
+            _logger.error("Remote Sync: FAILED to create payment %s", self.name)
+            return False
 
-        _logger.error("Remote Sync: FAILED to create payment %s", self.name)
-        return False
+        self.env['remote.sync.mapping'].set_mapping('account.payment', self.id, remote_id)
+        _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
+
+        # 6. Confirm (post) the payment on remote immediately — regardless of local state
+        try:
+            config._call_kw('account.payment', 'action_post', args=[[remote_id]])
+            _logger.info("Remote Sync: CONFIRMED payment %s on remote #%s", self.name, remote_id)
+        except Exception as e:
+            _logger.warning(
+                "Remote Sync: could not confirm payment %s on remote (already posted?): %s",
+                self.name, e
+            )
+
+        return True
 
     # ------------------------------------------------------------------
     # WRITE payment on remote

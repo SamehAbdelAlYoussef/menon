@@ -372,6 +372,15 @@ class CrmLeadReport(http.Controller):
             data_fmt, data_alt_fmt, comment_fmt, comment_alt_fmt,
             total_fmt, tick_fmt, tick_alt_fmt,
         )
+        # ── شيت اوت = الليدز اللي عليها is_out=True ──
+        out_leads = [l for l in ordered_leads if l.is_out]
+        self._build_out_lost_sheet(
+            workbook, out_leads,
+            hdr1_fmt, hdr1_blue_fmt, hdr1_green_fmt, hdr1_grey_fmt,
+            hdr2_dark_fmt, hdr2_blue_fmt, hdr2_green_fmt, hdr2_grey_fmt,
+            data_fmt, data_alt_fmt, comment_fmt, comment_alt_fmt,
+            total_fmt, tick_fmt, tick_alt_fmt,
+        )
         workbook.close()
         output.seek(0)
         content = output.read()
@@ -389,14 +398,21 @@ class CrmLeadReport(http.Controller):
 
     def _campaign_type(self, lead):
         """
-        نوع الكامبين = street + country
+        نوع الكامبين = street + country + state
+        Example: Egypt-Al Sharqia (EG)
         لو مفيش قيمة يرجع فراغ
         """
         parts = []
         if lead.street:
             parts.append(lead.street.strip())
         if lead.country_id and lead.country_id.name:
-            parts.append(lead.country_id.name.strip())
+            c_name = lead.country_id.name.strip()
+            code = (lead.country_id.code or '').strip()
+            if lead.state_id and lead.state_id.name:
+                c_name = '%s-%s (%s)' % (c_name, lead.state_id.name.strip(), code)
+            else:
+                c_name = '%s (%s)' % (c_name, code) if code else c_name
+            parts.append(c_name)
         return ' - '.join(parts) if parts else ''
 
     def _classify_message(self, lead):
@@ -876,5 +892,154 @@ class CrmLeadReport(http.Controller):
         for col_i, val in enumerate(total_vals, start=7):
             ws.write(total_row, col_i, val or '', total_fmt)
         ws.write(total_row, 17, '', total_fmt)
+
+        ws.freeze_panes(3, 0)
+
+    def _build_out_lost_sheet(self, workbook, leads,
+                              hdr1_fmt, hdr1_blue_fmt, hdr1_green_fmt, hdr1_grey_fmt,
+                              hdr2_dark_fmt, hdr2_blue_fmt, hdr2_green_fmt, hdr2_grey_fmt,
+                              data_fmt, data_alt_fmt, comment_fmt, comment_alt_fmt,
+                              total_fmt, tick_fmt, tick_alt_fmt):
+        """شيت اوت - يعرض كل الليدز الخسرانة مع سبب الخسارة بعد نوع الكامبين"""
+        ws = workbook.add_worksheet('اوت')
+        ws.right_to_left()
+
+        hdr1_red_fmt = workbook.add_format({
+            'bold': True, 'font_name': 'Arial', 'font_size': 11,
+            'font_color': '#FFFFFF', 'bg_color': '#C00000',
+            'align': 'center', 'valign': 'vcenter',
+            'border': 1, 'reading_order': 2,
+        })
+        hdr2_red_fmt = workbook.add_format({
+            'bold': True, 'font_name': 'Arial', 'font_size': 10,
+            'font_color': '#FFFFFF', 'bg_color': '#C00000',
+            'align': 'center', 'valign': 'vcenter',
+            'border': 1, 'text_wrap': True, 'reading_order': 2,
+        })
+
+        ws.set_column(0, 0, 5)
+        ws.set_column(1, 1, 10)
+        ws.set_column(2, 2, 13)
+        ws.set_column(3, 3, 14)
+        ws.set_column(4, 4, 22)
+        ws.set_column(5, 5, 18)
+        ws.set_column(6, 6, 18)
+        ws.set_column(7, 7, 22)   # سبب الخسارة
+        ws.set_column(8, 12, 9)
+        ws.set_column(13, 17, 13)
+        ws.set_column(18, 18, 45)
+        ws.set_row(0, 22)
+        ws.set_row(1, 20)
+        ws.set_row(2, 16)
+
+        ws.merge_range(0, 0, 0, 6, '', hdr1_fmt)
+        ws.write(0, 7, 'سبب الخسارة', hdr1_red_fmt)
+        ws.merge_range(0, 8, 0, 12, 'تصنيف الرسالة', hdr1_blue_fmt)
+        ws.merge_range(0, 13, 0, 17, 'تصنيف العميل', hdr1_green_fmt)
+        ws.write(0, 18, 'الكومنت', hdr1_grey_fmt)
+
+        col_names = [
+            ('م',                      hdr2_dark_fmt),
+            ('الوقت',                  hdr2_dark_fmt),
+            ('المسئول',                hdr2_dark_fmt),
+            ('التاريخ',                hdr2_dark_fmt),
+            ('إسم العميل',             hdr2_dark_fmt),
+            ('رقم التليفون',           hdr2_dark_fmt),
+            ('نوع الكامبين',           hdr2_dark_fmt),
+            ('سبب الخسارة',            hdr2_red_fmt),
+            ('واتساب',                 hdr2_blue_fmt),
+            ('فيسبوك',                 hdr2_blue_fmt),
+            ('',                       hdr2_blue_fmt),
+            ('إنستجرام',              hdr2_blue_fmt),
+            ('',                       hdr2_blue_fmt),
+            ('لم يرد',                 hdr2_green_fmt),
+            ('احتمالية المتابعة 40 %', hdr2_green_fmt),
+            ('اوت',                    hdr2_green_fmt),
+            ('احتمالية المتابعة 90 %', hdr2_green_fmt),
+            ('معاينة',                 hdr2_green_fmt),
+            ('الكومنت',               hdr2_grey_fmt),
+        ]
+        for col_i, (name, fmt) in enumerate(col_names):
+            ws.write(1, col_i, name, fmt)
+
+        row3 = [
+            ('', hdr2_dark_fmt), ('', hdr2_dark_fmt), ('', hdr2_dark_fmt),
+            ('', hdr2_dark_fmt), ('', hdr2_dark_fmt), ('', hdr2_dark_fmt),
+            ('', hdr2_dark_fmt),
+            ('', hdr2_red_fmt),
+            ('', hdr2_blue_fmt), ('رسالة', hdr2_blue_fmt), ('رقم', hdr2_blue_fmt),
+            ('رسالة', hdr2_blue_fmt), ('رقم', hdr2_blue_fmt),
+            ('', hdr2_green_fmt), ('', hdr2_green_fmt), ('', hdr2_green_fmt),
+            ('', hdr2_green_fmt), ('', hdr2_green_fmt),
+            ('', hdr2_grey_fmt),
+        ]
+        for col_i, (val, fmt) in enumerate(row3):
+            ws.write(2, col_i, val, fmt)
+
+        totals = {k: 0 for k in [
+            'whatsapp', 'fb_msg', 'fb_num', 'ig_msg', 'ig_num',
+            'no_answer', 'follow_40', 'out', 'follow_90', 'inspection',
+        ]}
+
+        for idx, lead in enumerate(leads):
+            row_i = idx + 3
+            is_alt = idx % 2 == 1
+            df = data_alt_fmt if is_alt else data_fmt
+            tf = tick_alt_fmt if is_alt else tick_fmt
+            cf = comment_alt_fmt if is_alt else comment_fmt
+
+            ws.set_row(row_i, 22)
+
+            msg = self._classify_message(lead)
+            cust = self._classify_customer(lead)
+
+            for k, v in msg.items():
+                if v: totals[k] += 1
+            for k, v in cust.items():
+                if v: totals[k] += 1
+
+            d = lead.visit_date
+            date_str = '%d-%d-%d' % (d.day, d.month, d.year) if d else ''
+            lost_reason = lead.lost_reason_id.name if lead.lost_reason_id else ''
+
+            row_vals = [
+                (idx + 1, df),
+                (lead.visit_time or '', df),
+                (lead.user_id.name or '', df),
+                (date_str, df),
+                (lead.partner_name or lead.contact_name or '', df),
+                (lead.mobile or lead.phone or '', df),
+                (self._campaign_type(lead), df),
+                (lost_reason, df),
+                (msg['whatsapp'] or '', tf if msg['whatsapp'] else df),
+                (msg['fb_msg'] or '', tf if msg['fb_msg'] else df),
+                (msg['fb_num'] or '', tf if msg['fb_num'] else df),
+                (msg['ig_msg'] or '', tf if msg['ig_msg'] else df),
+                (msg['ig_num'] or '', tf if msg['ig_num'] else df),
+                (cust['no_answer'] or '', tf if cust['no_answer'] else df),
+                (cust['follow_40'] or '', tf if cust['follow_40'] else df),
+                (cust['out'] or '', tf if cust['out'] else df),
+                (cust['follow_90'] or '', tf if cust['follow_90'] else df),
+                (cust['inspection'] or '', tf if cust['inspection'] else df),
+                (self._clean_description(lead.description), cf),
+            ]
+            for col_i, (val, fmt) in enumerate(row_vals):
+                ws.write(row_i, col_i, val, fmt)
+
+        total_row = len(leads) + 3
+        ws.set_row(total_row, 20)
+        for col_i in range(0, 6):
+            ws.write(total_row, col_i, '', total_fmt)
+        ws.write(total_row, 6, 'الإجمالي', total_fmt)
+        ws.write(total_row, 7, '', total_fmt)
+        total_vals = [
+            totals['whatsapp'], totals['fb_msg'], totals['fb_num'],
+            totals['ig_msg'], totals['ig_num'],
+            totals['no_answer'], totals['follow_40'], totals['out'],
+            totals['follow_90'], totals['inspection'],
+        ]
+        for col_i, val in enumerate(total_vals, start=8):
+            ws.write(total_row, col_i, val or '', total_fmt)
+        ws.write(total_row, 18, '', total_fmt)
 
         ws.freeze_panes(3, 0)

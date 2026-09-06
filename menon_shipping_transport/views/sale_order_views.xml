@@ -50,6 +50,23 @@
                     </field>
                 </page>
             </xpath>
+
+            <!-- Flag the auto-generated shipping & transport order line so it can be made readonly -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='display_type']" position="after">
+                <field name="is_shipping_transport_line" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="attributes">
+                <attribute name="readonly">not product_updatable or is_shipping_transport_line</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']" position="attributes">
+                <attribute name="readonly">(id and not product_updatable) or is_shipping_transport_line</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="readonly">is_downpayment or is_shipping_transport_line</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="readonly">qty_invoiced &gt; 0 or is_shipping_transport_line</attribute>
+            </xpath>
         </field>
     </record>
 

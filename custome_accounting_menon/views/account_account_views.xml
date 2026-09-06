@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_form_taqseet" model="ir.ui.view">
+        <field name="name">account.account.form.taqseet</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='deprecated']" position="after">
+
+                <field name="is_taqseet_company" widget="boolean_toggle" string="Installment Company"/>
+
+                <field name="taqseet_account_id"
+                       string="Installment Company Account"
+                       invisible="not is_taqseet_company"
+                       options="{'no_create': True}"/>
+
+                <field name="taqseet_account_balance"
+                       string="Account Balance"
+                       invisible="not is_taqseet_company or not taqseet_account_id"
+                       readonly="1"/>
+
+            </xpath>
+        </field>
+    </record>
+</odoo>

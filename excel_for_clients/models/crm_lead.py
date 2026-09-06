@@ -99,6 +99,41 @@ class CrmLead(models.Model):
                 subtype_xmlid='mail.mt_comment',
             )
 
+    def restore_out_leads(self):
+        """يرجّع كل الليدز الـ lost اللي عليها is_out=True لحالتها الطبيعية"""
+        lost_out = self.with_context(active_test=False).search([
+            ('active', '=', False),
+            ('is_out', '=', True),
+            ('type', '=', 'opportunity'),
+        ])
+        if not lost_out:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': 'لا يوجد',
+                    'message': 'مفيش ليدز out محتاجة ترجع',
+                    'type': 'warning',
+                    'sticky': False,
+                },
+            }
+        lost_out.write({'active': True, 'is_out': True})
+        for lead in lost_out:
+            lead.message_post(
+                body='تم استرجاع الليد (Out) من Lost',
+                message_type='notification',
+            )
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'تم الاسترجاع',
+                'message': 'تم استرجاع %d ليد من Lost وتحديدها كـ Out' % len(lost_out),
+                'type': 'success',
+                'sticky': False,
+            },
+        }
+
     def crm_xlsx_report(self):
         if not self.ids:
             raise UserError("من فضلك اختار records الأول!")
