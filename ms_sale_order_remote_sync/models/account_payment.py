@@ -145,14 +145,24 @@ class AccountPayment(models.Model):
         self.env['remote.sync.mapping'].set_mapping('account.payment', self.id, remote_id)
         _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
 
-        # 6. Confirm (post) the payment on remote immediately — regardless of local state
-        try:
-            config._call_kw('account.payment', 'action_post', args=[[remote_id]])
-            _logger.info("Remote Sync: CONFIRMED payment %s on remote #%s", self.name, remote_id)
-        except Exception as e:
+        # 6. Confirm (post) the payment on remote immediately
+        post_result = config._call_kw('account.payment', 'action_post', args=[[remote_id]])
+
+        # Verify the payment is actually posted on remote
+        remote_state_data = config._call_kw(
+            'account.payment', 'read',
+            args=[[remote_id], ['state']],
+        )
+        remote_state = (remote_state_data[0].get('state') if remote_state_data else None)
+
+        if remote_state == 'posted':
+            _logger.info("Remote Sync: payment %s → remote #%s is PAID (posted)",
+                         self.name, remote_id)
+        else:
             _logger.warning(
-                "Remote Sync: could not confirm payment %s on remote (already posted?): %s",
-                self.name, e
+                "Remote Sync: payment %s remote #%s state is '%s' (expected posted). "
+                "action_post result: %s",
+                self.name, remote_id, remote_state, post_result
             )
 
         return True
