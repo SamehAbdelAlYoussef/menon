@@ -106,9 +106,25 @@ class AccountPayment(models.Model):
             _logger.warning("Remote Sync: no partner for payment %s", self.name)
             return False
 
-        # 2. Journal — search by name on remote
+        # 2. Journal — find a CASH journal on remote (cash goes directly to 'paid',
+        #    bank journals only reach 'in_process' until bank reconciliation)
         remote_journal_id = None
+        # First try: match by name AND type=cash
         if self.journal_id:
+            found = config._call_kw('account.journal', 'search',
+                                    args=[[['name', 'ilike', self.journal_id.name],
+                                           ['type', '=', 'cash']], 0, 1])
+            if found:
+                remote_journal_id = found[0]
+
+        # Second try: any cash journal on remote
+        if not remote_journal_id:
+            found = config._call_kw('account.journal', 'search',
+                                    args=[[['type', '=', 'cash']], 0, 1])
+            remote_journal_id = found[0] if found else None
+
+        # Last resort: match by name regardless of type
+        if not remote_journal_id and self.journal_id:
             found = config._call_kw('account.journal', 'search',
                                     args=[[['name', 'ilike', self.journal_id.name]], 0, 1])
             remote_journal_id = found[0] if found else None
@@ -146,25 +162,22 @@ class AccountPayment(models.Model):
         _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
 
         # 6. Confirm (post) the payment on remote immediately
+        # Try action_post first (Odoo 14+), fallback to action_validate (older)
         post_result = config._call_kw('account.payment', 'action_post', args=[[remote_id]])
+        if not post_result and post_result != True:
+            post_result = config._call_kw('account.payment', 'action_validate', args=[[remote_id]])
 
-        # Verify the payment is actually posted on remote
+        # Verify actual state on remote
         remote_state_data = config._call_kw(
             'account.payment', 'read',
             args=[[remote_id], ['state']],
         )
-        remote_state = (remote_state_data[0].get('state') if remote_state_data else None)
+        remote_state = (remote_state_data[0].get('state') if remote_state_data else 'unknown')
 
-        if remote_state == 'posted':
-            _logger.info("Remote Sync: payment %s → remote #%s is PAID (posted)",
-                         self.name, remote_id)
-        else:
-            _logger.warning(
-                "Remote Sync: payment %s remote #%s state is '%s' (expected posted). "
-                "action_post result: %s",
-                self.name, remote_id, remote_state, post_result
-            )
-
+        _logger.info(
+            "Remote Sync: payment %s → remote #%s state=%s (post_result=%s)",
+            self.name, remote_id, remote_state, post_result
+        )
         return True
 
     # ------------------------------------------------------------------

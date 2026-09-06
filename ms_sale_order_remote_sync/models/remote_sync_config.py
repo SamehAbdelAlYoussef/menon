@@ -98,7 +98,6 @@ class RemoteSyncConfig(models.Model):
         result = self._rpc('common', 'authenticate',
                            args=[self.target_db, self.username, self.password, {}])
         if result and isinstance(result, int):
-            print("result",result)
             return result
         _logger.error("Remote Sync: authentication failed")
         return None

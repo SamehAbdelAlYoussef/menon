@@ -9,3 +9,4 @@ https://github.com/SamehAbdelAlYoussef/menon.git
 
 restart addons
 docker-compose restart odoo
+  docker logs odoo18-app --tail=50
