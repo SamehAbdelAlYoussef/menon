@@ -119,7 +119,8 @@ class AccountPayment(models.Model):
                 'sale.order', self.sale_order_id.id
             )
 
-        # 4. Build payment vals
+        # 4. Build payment vals — let Odoo set destination_account_id normally
+        #    (receivable/payable). We will reconcile it via write-off after posting.
         payment_vals = {
             'partner_id': remote_partner_id,
             'amount': self.amount,
@@ -127,25 +128,12 @@ class AccountPayment(models.Model):
             'date': fields.Date.to_string(self.date) if self.date else False,
             'journal_id': remote_journal_id,
         }
-
-        # Set destination_account_id to the journal's outstanding account
-        # (non-receivable/payable type) so _seek_for_lines finds no counterpart
-        # lines → is_reconciled = True → state goes directly to 'paid' after post.
-        dest_account_id = self._get_remote_non_receivable_account(config, remote_journal_id)
-        if dest_account_id:
-            payment_vals['destination_account_id'] = dest_account_id
-
         if remote_so_id:
             payment_vals['sale_order_id'] = remote_so_id
         if self.payment_reference:
             payment_vals['payment_reference'] = self.payment_reference
         if self.memo:
             payment_vals['memo'] = self.memo
-
-        # Remove destination_account_id from create vals —
-        # Odoo's compute overrides it immediately after create().
-        # We write it separately after creation so it sticks before posting.
-        payment_vals.pop('destination_account_id', None)
 
         # 5. Create remotely
         remote_id = config._call_kw('account.payment', 'create', args=[payment_vals])
@@ -156,17 +144,7 @@ class AccountPayment(models.Model):
         self.env['remote.sync.mapping'].set_mapping('account.payment', self.id, remote_id)
         _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
 
-        # 5b. Override destination_account_id AFTER creation so _seek_for_lines
-        #     finds no receivable/payable counterpart → is_reconciled=True → paid.
-        if dest_account_id:
-            config._call_kw('account.payment', 'write',
-                            args=[[remote_id], {'destination_account_id': dest_account_id}])
-            _logger.info(
-                "Remote Sync: set destination_account_id=%s on remote payment #%s",
-                dest_account_id, remote_id,
-            )
-
-        # 6. Post the payment on remote
+        # 6. Post the payment → creates journal entry with receivable/payable line
         config._call_kw('account.payment', 'action_post', args=[[remote_id]])
 
         # 7. Read state + move_id
@@ -303,31 +281,30 @@ class AccountPayment(models.Model):
                 kwargs={'fields': ['id', 'debit', 'credit', 'account_id', 'partner_id']},
             ) or []
 
-            # 2. Read each account's type and keep only receivable/payable lines
+            # 2. For each line read its account type and keep receivable/payable ones
             lines = []
             for ml in all_lines:
                 acc_ref = ml.get('account_id')
                 acc_id = acc_ref[0] if isinstance(acc_ref, (list, tuple)) else acc_ref
                 if not acc_id:
                     continue
-                acc_data = config._call_kw(
-                    'account.account', 'read',
-                    args=[[acc_id], ['account_type']],
-                )
-                if acc_data and acc_data[0].get('account_type') in (
-                        'asset_receivable', 'liability_payable'):
-                    lines.append(ml)
+                acc_data = config._call_kw('account.account', 'read',
+                                           args=[[acc_id], ['account_type', 'name']])
+                if acc_data:
+                    atype = acc_data[0].get('account_type', '')
+                    _logger.info(
+                        "Remote Sync: move line id=%s account='%s' type=%s debit=%s credit=%s",
+                        ml['id'], acc_data[0].get('name'), atype,
+                        ml.get('debit'), ml.get('credit'),
+                    )
+                    if atype in ('asset_receivable', 'liability_payable'):
+                        lines.append(ml)
 
             _logger.info(
-                "Remote Sync: write-off reconcile — found %d receivable/payable lines for move #%s",
+                "Remote Sync: write-off — found %d receivable/payable lines on move #%s",
                 len(lines), move_id,
             )
             if not lines:
-                _logger.warning(
-                    "Remote Sync: no receivable/payable lines on move #%s — "
-                    "destination_account_id may have bypassed them already.",
-                    move_id,
-                )
                 return _read_state()
 
             line = lines[0]
