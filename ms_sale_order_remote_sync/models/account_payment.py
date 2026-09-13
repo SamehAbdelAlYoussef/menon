@@ -125,9 +125,16 @@ class AccountPayment(models.Model):
             'amount': self.amount,
             'payment_type': self.payment_type,
             'date': fields.Date.to_string(self.date) if self.date else False,
+            'journal_id': remote_journal_id,
         }
-        if remote_journal_id:
-            payment_vals['journal_id'] = remote_journal_id
+
+        # Set destination_account_id to the journal's outstanding account
+        # (non-receivable/payable type) so _seek_for_lines finds no counterpart
+        # lines → is_reconciled = True → state goes directly to 'paid' after post.
+        dest_account_id = self._get_remote_non_receivable_account(config, remote_journal_id)
+        if dest_account_id:
+            payment_vals['destination_account_id'] = dest_account_id
+
         if remote_so_id:
             payment_vals['sale_order_id'] = remote_so_id
         if self.payment_reference:
@@ -170,6 +177,48 @@ class AccountPayment(models.Model):
                 self.name, remote_id, remote_state,
             )
         return True
+
+    # ------------------------------------------------------------------
+    # Get a non-receivable/payable account from the cash journal
+    # so destination_account_id bypasses reconciliation → state = paid
+    # ------------------------------------------------------------------
+
+    def _get_remote_non_receivable_account(self, config, remote_journal_id):
+        """Return the journal's outstanding account if it's not receivable/payable.
+        A non-receivable destination means _seek_for_lines finds no counterpart
+        lines → is_reconciled = True → payment goes to 'paid' after action_post."""
+        try:
+            field = ('payment_debit_account_id'
+                     if self.payment_type == 'inbound'
+                     else 'payment_credit_account_id')
+            journal_data = config._call_kw(
+                'account.journal', 'read',
+                args=[[remote_journal_id], [field, 'default_account_id']],
+            )
+            if not journal_data:
+                return None
+
+            # Prefer the outstanding account, fall back to default account
+            outstanding = journal_data[0].get(field)
+            default = journal_data[0].get('default_account_id')
+
+            for ref in (outstanding, default):
+                if not ref:
+                    continue
+                account_id = ref[0] if isinstance(ref, (list, tuple)) else ref
+                if not account_id:
+                    continue
+                account_data = config._call_kw(
+                    'account.account', 'read',
+                    args=[[account_id], ['account_type', 'reconcile']],
+                )
+                if account_data:
+                    atype = account_data[0].get('account_type', '')
+                    if atype not in ('asset_receivable', 'liability_payable'):
+                        return account_id
+        except Exception as e:
+            _logger.warning("Remote Sync: could not resolve destination account: %s", e)
+        return None
 
     # ------------------------------------------------------------------
     # Get or create a Cash journal on the remote (guaranteed to exist)
