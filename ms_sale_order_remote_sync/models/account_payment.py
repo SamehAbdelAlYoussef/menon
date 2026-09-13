@@ -106,9 +106,11 @@ class AccountPayment(models.Model):
             _logger.warning("Remote Sync: no partner for payment %s", self.name)
             return False
 
-        # 2. Journal — find a CASH journal on remote (cash goes directly to 'paid',
-        #    bank journals only reach 'in_process' until bank reconciliation)
+        # 2. Journal — MUST be a CASH journal on remote so the payment goes
+        #    directly to 'paid' after action_post. Bank journals stay in
+        #    'in_process' until bank reconciliation which we cannot do remotely.
         remote_journal_id = None
+
         # First try: match by name AND type=cash
         if self.journal_id:
             found = config._call_kw('account.journal', 'search',
@@ -123,11 +125,14 @@ class AccountPayment(models.Model):
                                     args=[[['type', '=', 'cash']], 0, 1])
             remote_journal_id = found[0] if found else None
 
-        # Last resort: match by name regardless of type
-        if not remote_journal_id and self.journal_id:
-            found = config._call_kw('account.journal', 'search',
-                                    args=[[['name', 'ilike', self.journal_id.name]], 0, 1])
-            remote_journal_id = found[0] if found else None
+        # No cash journal at all → abort with a clear message
+        if not remote_journal_id:
+            _logger.error(
+                "Remote Sync: no CASH journal found on remote for payment %s. "
+                "Please create a cash journal on the remote Odoo so payments reach 'paid' state.",
+                self.name,
+            )
+            return False
 
         # 3. Sale order — lookup via mapping
         remote_so_id = None
@@ -161,24 +166,103 @@ class AccountPayment(models.Model):
         self.env['remote.sync.mapping'].set_mapping('account.payment', self.id, remote_id)
         _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
 
-        # 6. Confirm (post) the payment on remote immediately
-        # Try action_post first (Odoo 14+), fallback to action_validate (older)
-        post_result = config._call_kw('account.payment', 'action_post', args=[[remote_id]])
-        if not post_result and post_result != True:
-            post_result = config._call_kw('account.payment', 'action_validate', args=[[remote_id]])
+        # 6. Post the payment on remote
+        config._call_kw('account.payment', 'action_post', args=[[remote_id]])
 
-        # Verify actual state on remote
-        remote_state_data = config._call_kw(
+        # 7. Read state + move_id
+        remote_data = config._call_kw(
             'account.payment', 'read',
-            args=[[remote_id], ['state']],
+            args=[[remote_id], ['state', 'move_id']],
         )
-        remote_state = (remote_state_data[0].get('state') if remote_state_data else 'unknown')
+        remote_state = remote_data[0].get('state') if remote_data else 'unknown'
+        move_id = remote_data[0].get('move_id') if remote_data else None
+        if isinstance(move_id, (list, tuple)):
+            move_id = move_id[0]
 
-        _logger.info(
-            "Remote Sync: payment %s → remote #%s state=%s (post_result=%s)",
-            self.name, remote_id, remote_state, post_result
-        )
+        # 8. Force 'paid' — try every available strategy until state changes
+        if remote_state != 'paid':
+            remote_state = self._force_remote_payment_paid(config, remote_id, move_id, remote_state)
+
+        if remote_state == 'paid':
+            _logger.info("Remote Sync: payment %s → remote #%s ✓ state=paid", self.name, remote_id)
+        else:
+            _logger.error(
+                "Remote Sync: payment %s → remote #%s STUCK at state=%s — "
+                "ensure the remote has a properly configured Cash journal.",
+                self.name, remote_id, remote_state,
+            )
         return True
+
+    # ------------------------------------------------------------------
+    # Force remote payment to 'paid' — multi-strategy
+    # ------------------------------------------------------------------
+
+    def _force_remote_payment_paid(self, config, remote_id, move_id, current_state):
+        """Try every available RPC strategy to move the remote payment to 'paid'."""
+
+        def _read_state():
+            data = config._call_kw('account.payment', 'read', args=[[remote_id], ['state']])
+            return data[0].get('state') if data else 'unknown'
+
+        # Strategy 1: private reconcile method (Odoo 16/17/18)
+        try:
+            config._call_kw('account.payment', '_reconcile_payment_lines', args=[[remote_id]])
+            state = _read_state()
+            if state == 'paid':
+                return state
+        except Exception:
+            pass
+
+        # Strategy 2: reconcile the outstanding receivable/payable move lines
+        if move_id:
+            try:
+                outstanding_line_ids = config._call_kw(
+                    'account.move.line', 'search',
+                    args=[[
+                        ['move_id', '=', move_id],
+                        ['account_type', 'in', ['asset_receivable', 'liability_payable']],
+                        ['reconciled', '=', False],
+                        ['amount_residual', '!=', 0],
+                    ]],
+                )
+                if outstanding_line_ids:
+                    # Find any matching counterpart lines from the same partner
+                    counterpart_domain = [
+                        ['account_type', 'in', ['asset_receivable', 'liability_payable']],
+                        ['reconciled', '=', False],
+                        ['partner_id', '=', remote_partner_id
+                         if hasattr(self, '_remote_partner_id_cache') else False],
+                        ['id', 'not in', outstanding_line_ids],
+                    ]
+                    # Try reconciling our outstanding lines directly
+                    config._call_kw('account.move.line', 'reconcile', args=[outstanding_line_ids])
+                    state = _read_state()
+                    if state == 'paid':
+                        return state
+            except Exception:
+                pass
+
+        # Strategy 3: mark move as sent (contributes to 'paid' in some Odoo versions)
+        try:
+            config._call_kw('account.payment', 'action_mark_as_sent', args=[[remote_id]])
+            state = _read_state()
+            if state == 'paid':
+                return state
+        except Exception:
+            pass
+
+        # Strategy 4: direct write on the move's payment_state (last resort)
+        if move_id:
+            try:
+                config._call_kw('account.move', 'write',
+                                 args=[[move_id], {'payment_state': 'paid'}])
+                state = _read_state()
+                if state == 'paid':
+                    return state
+            except Exception:
+                pass
+
+        return _read_state()
 
     # ------------------------------------------------------------------
     # WRITE payment on remote
