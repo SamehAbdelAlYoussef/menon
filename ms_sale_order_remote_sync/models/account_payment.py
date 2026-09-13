@@ -142,6 +142,11 @@ class AccountPayment(models.Model):
         if self.memo:
             payment_vals['memo'] = self.memo
 
+        # Remove destination_account_id from create vals —
+        # Odoo's compute overrides it immediately after create().
+        # We write it separately after creation so it sticks before posting.
+        payment_vals.pop('destination_account_id', None)
+
         # 5. Create remotely
         remote_id = config._call_kw('account.payment', 'create', args=[payment_vals])
         if not remote_id:
@@ -150,6 +155,16 @@ class AccountPayment(models.Model):
 
         self.env['remote.sync.mapping'].set_mapping('account.payment', self.id, remote_id)
         _logger.info("Remote Sync: CREATED payment %s → remote #%s", self.name, remote_id)
+
+        # 5b. Override destination_account_id AFTER creation so _seek_for_lines
+        #     finds no receivable/payable counterpart → is_reconciled=True → paid.
+        if dest_account_id:
+            config._call_kw('account.payment', 'write',
+                            args=[[remote_id], {'destination_account_id': dest_account_id}])
+            _logger.info(
+                "Remote Sync: set destination_account_id=%s on remote payment #%s",
+                dest_account_id, remote_id,
+            )
 
         # 6. Post the payment on remote
         config._call_kw('account.payment', 'action_post', args=[[remote_id]])
