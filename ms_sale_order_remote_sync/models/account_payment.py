@@ -401,9 +401,17 @@ class AccountPayment(models.Model):
                 "Remote Sync: payment #%s after reconcile → state=%s is_reconciled=%s",
                 remote_id, state, is_rec,
             )
-            # Trust is_reconciled even if state hasn't recomputed yet
-            if is_rec or state == 'paid':
-                return 'paid'
+            if is_rec and state != 'paid':
+                # state is a stored computed field with readonly=False on the remote —
+                # write 'paid' directly to sync the stored value with is_reconciled.
+                config._call_kw('account.payment', 'write',
+                                 args=[[remote_id], {'state': 'paid'}])
+                _logger.info(
+                    "Remote Sync: payment #%s forced state=paid via direct write",
+                    remote_id,
+                )
+                state = 'paid'
+
             return state
 
         except Exception as e:

@@ -20,8 +20,8 @@ class SaleOrder(models.Model):
     def _compute_so_payment_summary(self):
         for rec in self:
             APL = self.env['account.payment']
-            payments = APL.search([('state', '=', 'paid'), ('payment_type', '=', 'inbound')]).filtered(lambda x: x.sale_order_id.id == rec.id)
-            refunds = APL.search([('state', '=', 'paid'), ('payment_type', '=', 'outbound')]).filtered(lambda x: x.sale_order_id.id == rec.id)
+            payments = APL.search([('state', 'in', ['paid', 'in_process']), ('payment_type', '=', 'inbound')]).filtered(lambda x: x.sale_order_id.id == rec.id)
+            refunds = APL.search([('state', 'in', ['paid', 'in_process']), ('payment_type', '=', 'outbound')]).filtered(lambda x: x.sale_order_id.id == rec.id)
             rec.so_payments = sum(payments.mapped('amount')) if payments else 0.0
             rec.so_refunds = sum(refunds.mapped('amount')) if refunds else 0.0
             rec.so_remaining = rec.amount_total - rec.so_payments + rec.so_refunds
