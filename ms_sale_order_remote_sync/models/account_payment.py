@@ -295,18 +295,39 @@ class AccountPayment(models.Model):
             return _read_state()
 
         try:
-            # 1. Find the unreconciled receivable/payable line on the payment move
-            lines = config._call_kw(
+            # 1. Get ALL unreconciled lines of the payment move (avoid account_type
+            #    in domain — it may not work on all remote Odoo versions).
+            all_lines = config._call_kw(
                 'account.move.line', 'search_read',
-                args=[[
-                    ['move_id', '=', move_id],
-                    ['account_type', 'in', ['asset_receivable', 'liability_payable']],
-                    ['reconciled', '=', False],
-                ]],
-                kwargs={'fields': ['id', 'debit', 'credit', 'account_id', 'partner_id',
-                                   'currency_id', 'amount_currency']},
+                args=[[['move_id', '=', move_id], ['reconciled', '=', False]]],
+                kwargs={'fields': ['id', 'debit', 'credit', 'account_id', 'partner_id']},
+            ) or []
+
+            # 2. Read each account's type and keep only receivable/payable lines
+            lines = []
+            for ml in all_lines:
+                acc_ref = ml.get('account_id')
+                acc_id = acc_ref[0] if isinstance(acc_ref, (list, tuple)) else acc_ref
+                if not acc_id:
+                    continue
+                acc_data = config._call_kw(
+                    'account.account', 'read',
+                    args=[[acc_id], ['account_type']],
+                )
+                if acc_data and acc_data[0].get('account_type') in (
+                        'asset_receivable', 'liability_payable'):
+                    lines.append(ml)
+
+            _logger.info(
+                "Remote Sync: write-off reconcile — found %d receivable/payable lines for move #%s",
+                len(lines), move_id,
             )
             if not lines:
+                _logger.warning(
+                    "Remote Sync: no receivable/payable lines on move #%s — "
+                    "destination_account_id may have bypassed them already.",
+                    move_id,
+                )
                 return _read_state()
 
             line = lines[0]
