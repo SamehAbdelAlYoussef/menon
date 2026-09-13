@@ -381,16 +381,29 @@ class AccountPayment(models.Model):
                 return _read_state()
 
             # 8. Reconcile payment line + write-off line → amount_residual=0 → paid
-            config._call_kw(
+            rec_result = config._call_kw(
                 'account.move.line', 'reconcile',
                 args=[[pay_line_id] + writeoff_lines],
             )
-
-            state = _read_state()
             _logger.info(
-                "Remote Sync: write-off reconcile for payment #%s → state=%s",
-                remote_id, state,
+                "Remote Sync: reconcile call result=%s for payment #%s",
+                rec_result, remote_id,
             )
+
+            # 9. Read is_reconciled directly — state field may be stale/cached
+            pay_data = config._call_kw(
+                'account.payment', 'read',
+                args=[[remote_id], ['state', 'is_reconciled']],
+            )
+            state = pay_data[0].get('state') if pay_data else 'unknown'
+            is_rec = pay_data[0].get('is_reconciled') if pay_data else False
+            _logger.info(
+                "Remote Sync: payment #%s after reconcile → state=%s is_reconciled=%s",
+                remote_id, state, is_rec,
+            )
+            # Trust is_reconciled even if state hasn't recomputed yet
+            if is_rec or state == 'paid':
+                return 'paid'
             return state
 
         except Exception as e:
