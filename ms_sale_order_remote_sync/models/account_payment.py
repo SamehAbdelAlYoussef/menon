@@ -199,38 +199,39 @@ class AccountPayment(models.Model):
     # ------------------------------------------------------------------
 
     def _get_remote_non_receivable_account(self, config, remote_journal_id):
-        """Return the journal's outstanding account if it's not receivable/payable.
-        A non-receivable destination means _seek_for_lines finds no counterpart
-        lines → is_reconciled = True → payment goes to 'paid' after action_post."""
+        """Return the journal's default account if it's not receivable/payable.
+        Using it as destination_account_id means _seek_for_lines finds no
+        counterpart → is_reconciled=True → payment goes to 'paid' after post."""
         try:
-            field = ('payment_debit_account_id'
-                     if self.payment_type == 'inbound'
-                     else 'payment_credit_account_id')
             journal_data = config._call_kw(
                 'account.journal', 'read',
-                args=[[remote_journal_id], [field, 'default_account_id']],
+                args=[[remote_journal_id], ['default_account_id', 'name']],
             )
             if not journal_data:
                 return None
 
-            # Prefer the outstanding account, fall back to default account
-            outstanding = journal_data[0].get(field)
-            default = journal_data[0].get('default_account_id')
+            _logger.info(
+                "Remote Sync: cash journal on remote = '%s' (id=%s)",
+                journal_data[0].get('name'), remote_journal_id,
+            )
 
-            for ref in (outstanding, default):
-                if not ref:
-                    continue
-                account_id = ref[0] if isinstance(ref, (list, tuple)) else ref
-                if not account_id:
-                    continue
-                account_data = config._call_kw(
-                    'account.account', 'read',
-                    args=[[account_id], ['account_type', 'reconcile']],
+            default = journal_data[0].get('default_account_id')
+            account_id = default[0] if isinstance(default, (list, tuple)) else default
+            if not account_id:
+                return None
+
+            account_data = config._call_kw(
+                'account.account', 'read',
+                args=[[account_id], ['account_type', 'name']],
+            )
+            if account_data:
+                atype = account_data[0].get('account_type', '')
+                _logger.info(
+                    "Remote Sync: journal default account '%s' type=%s",
+                    account_data[0].get('name'), atype,
                 )
-                if account_data:
-                    atype = account_data[0].get('account_type', '')
-                    if atype not in ('asset_receivable', 'liability_payable'):
-                        return account_id
+                if atype not in ('asset_receivable', 'liability_payable'):
+                    return account_id
         except Exception as e:
             _logger.warning("Remote Sync: could not resolve destination account: %s", e)
         return None
@@ -247,100 +248,156 @@ class AccountPayment(models.Model):
                                     args=[[['name', 'ilike', self.journal_id.name],
                                            ['type', '=', 'cash']], 0, 1])
             if found:
+                _logger.info("Remote Sync: found cash journal by name match id=%s", found[0])
                 return found[0]
 
         # 2. Any cash journal on remote
         found = config._call_kw('account.journal', 'search',
                                 args=[[['type', '=', 'cash']], 0, 1])
         if found:
+            _logger.info("Remote Sync: using existing cash journal id=%s", found[0])
             return found[0]
 
         # 3. No cash journal exists → create one automatically
         _logger.warning(
             "Remote Sync: no Cash journal on remote — creating 'MS Cash Sync' journal."
         )
-        journal_id = config._call_kw('account.journal', 'create', args=[{
-            'name': 'MS Cash Sync',
-            'type': 'cash',
-            'code': 'MSCSH',
-        }])
-        if journal_id:
-            _logger.info("Remote Sync: created Cash journal id=%s on remote.", journal_id)
-            return journal_id
+        # Try creating; if code 'MSCSH' already exists, try 'MSCSH2'
+        for code in ('MSCSH', 'MSCSH2', 'MSCSH3'):
+            journal_id = config._call_kw('account.journal', 'create', args=[{
+                'name': 'MS Cash Sync',
+                'type': 'cash',
+                'code': code,
+            }])
+            if journal_id:
+                _logger.info(
+                    "Remote Sync: created Cash journal code=%s id=%s on remote.",
+                    code, journal_id,
+                )
+                return journal_id
 
         _logger.error("Remote Sync: FAILED to create Cash journal on remote.")
         return None
 
     # ------------------------------------------------------------------
-    # Force remote payment to 'paid' — multi-strategy
+    # Force remote payment to 'paid' via write-off reconciliation
     # ------------------------------------------------------------------
 
     def _force_remote_payment_paid(self, config, remote_id, move_id, current_state):
-        """Try every available RPC strategy to move the remote payment to 'paid'."""
+        """Create an offsetting journal entry and reconcile it with the payment's
+        receivable/payable line → amount_residual=0 → is_reconciled=True → paid."""
 
         def _read_state():
             data = config._call_kw('account.payment', 'read', args=[[remote_id], ['state']])
-            return data[0].get('state') if data else 'unknown'
+            return (data[0].get('state') if data else 'unknown')
 
-        # Strategy 1: private reconcile method (Odoo 16/17/18)
+        if not move_id:
+            return _read_state()
+
         try:
-            config._call_kw('account.payment', '_reconcile_payment_lines', args=[[remote_id]])
+            # 1. Find the unreconciled receivable/payable line on the payment move
+            lines = config._call_kw(
+                'account.move.line', 'search_read',
+                args=[[
+                    ['move_id', '=', move_id],
+                    ['account_type', 'in', ['asset_receivable', 'liability_payable']],
+                    ['reconciled', '=', False],
+                ]],
+                kwargs={'fields': ['id', 'debit', 'credit', 'account_id', 'partner_id',
+                                   'currency_id', 'amount_currency']},
+            )
+            if not lines:
+                return _read_state()
+
+            line = lines[0]
+            pay_line_id = line['id']
+            account_id = line['account_id'][0] if isinstance(line['account_id'], list) else line['account_id']
+            partner_id = line['partner_id'][0] if line.get('partner_id') else False
+            debit = line['debit']
+            credit = line['credit']
+
+            # 2. Get the cash journal's default account for the offset side
+            journal_data = config._call_kw(
+                'account.journal', 'read',
+                args=[[self.env['remote.sync.mapping'].get_remote_id(
+                    'account.payment', self.id) and move_id],
+                    ['default_account_id']],
+            ) or []
+            # Simpler: search any expense/income account for the offset
+            offset_account_ids = config._call_kw(
+                'account.account', 'search',
+                args=[[['account_type', 'in', ['income_other', 'expense_other',
+                                               'income', 'expense']]]],
+                kwargs={'limit': 1},
+            )
+            offset_account_id = offset_account_ids[0] if offset_account_ids else account_id
+
+            date_str = fields.Date.to_string(self.date) if self.date else fields.Date.to_string(fields.Date.today())
+
+            # 3. Find a journal for the write-off entry
+            any_journal = config._call_kw(
+                'account.journal', 'search',
+                args=[[['type', 'in', ['general', 'cash', 'bank']]]],
+                kwargs={'limit': 1},
+            )
+            if not any_journal:
+                return _read_state()
+
+            # 4. Create write-off journal entry that offsets the receivable line
+            writeoff_vals = {
+                'journal_id': any_journal[0],
+                'date': date_str,
+                'ref': f'Auto-reconcile: {self.name}',
+                'line_ids': [
+                    (0, 0, {
+                        'account_id': account_id,
+                        'partner_id': partner_id,
+                        'debit': credit,   # offset credit line → debit
+                        'credit': debit,   # offset debit line → credit
+                        'name': f'Auto-reconcile {self.name}',
+                    }),
+                    (0, 0, {
+                        'account_id': offset_account_id,
+                        'partner_id': partner_id,
+                        'debit': debit,
+                        'credit': credit,
+                        'name': f'Auto-reconcile {self.name}',
+                    }),
+                ],
+            }
+
+            writeoff_move_id = config._call_kw('account.move', 'create', args=[writeoff_vals])
+            if not writeoff_move_id:
+                _logger.error("Remote Sync: failed to create write-off entry for payment #%s", remote_id)
+                return _read_state()
+
+            # 5. Post the write-off entry
+            config._call_kw('account.move', 'action_post', args=[[writeoff_move_id]])
+
+            # 7. Find the receivable/payable line in the write-off entry
+            writeoff_lines = config._call_kw(
+                'account.move.line', 'search',
+                args=[[['move_id', '=', writeoff_move_id], ['account_id', '=', account_id]]],
+            )
+            if not writeoff_lines:
+                return _read_state()
+
+            # 8. Reconcile payment line + write-off line → amount_residual=0 → paid
+            config._call_kw(
+                'account.move.line', 'reconcile',
+                args=[[pay_line_id] + writeoff_lines],
+            )
+
             state = _read_state()
-            if state == 'paid':
-                return state
-        except Exception:
-            pass
+            _logger.info(
+                "Remote Sync: write-off reconcile for payment #%s → state=%s",
+                remote_id, state,
+            )
+            return state
 
-        # Strategy 2: reconcile the outstanding receivable/payable move lines
-        if move_id:
-            try:
-                outstanding_line_ids = config._call_kw(
-                    'account.move.line', 'search',
-                    args=[[
-                        ['move_id', '=', move_id],
-                        ['account_type', 'in', ['asset_receivable', 'liability_payable']],
-                        ['reconciled', '=', False],
-                        ['amount_residual', '!=', 0],
-                    ]],
-                )
-                if outstanding_line_ids:
-                    # Find any matching counterpart lines from the same partner
-                    counterpart_domain = [
-                        ['account_type', 'in', ['asset_receivable', 'liability_payable']],
-                        ['reconciled', '=', False],
-                        ['partner_id', '=', remote_partner_id
-                         if hasattr(self, '_remote_partner_id_cache') else False],
-                        ['id', 'not in', outstanding_line_ids],
-                    ]
-                    # Try reconciling our outstanding lines directly
-                    config._call_kw('account.move.line', 'reconcile', args=[outstanding_line_ids])
-                    state = _read_state()
-                    if state == 'paid':
-                        return state
-            except Exception:
-                pass
-
-        # Strategy 3: mark move as sent (contributes to 'paid' in some Odoo versions)
-        try:
-            config._call_kw('account.payment', 'action_mark_as_sent', args=[[remote_id]])
-            state = _read_state()
-            if state == 'paid':
-                return state
-        except Exception:
-            pass
-
-        # Strategy 4: direct write on the move's payment_state (last resort)
-        if move_id:
-            try:
-                config._call_kw('account.move', 'write',
-                                 args=[[move_id], {'payment_state': 'paid'}])
-                state = _read_state()
-                if state == 'paid':
-                    return state
-            except Exception:
-                pass
-
-        return _read_state()
+        except Exception as e:
+            _logger.error("Remote Sync: write-off reconcile failed for payment #%s: %s", remote_id, e)
+            return _read_state()
 
     # ------------------------------------------------------------------
     # WRITE payment on remote
