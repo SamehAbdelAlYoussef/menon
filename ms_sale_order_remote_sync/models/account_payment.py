@@ -106,32 +106,10 @@ class AccountPayment(models.Model):
             _logger.warning("Remote Sync: no partner for payment %s", self.name)
             return False
 
-        # 2. Journal — MUST be a CASH journal on remote so the payment goes
-        #    directly to 'paid' after action_post. Bank journals stay in
-        #    'in_process' until bank reconciliation which we cannot do remotely.
-        remote_journal_id = None
-
-        # First try: match by name AND type=cash
-        if self.journal_id:
-            found = config._call_kw('account.journal', 'search',
-                                    args=[[['name', 'ilike', self.journal_id.name],
-                                           ['type', '=', 'cash']], 0, 1])
-            if found:
-                remote_journal_id = found[0]
-
-        # Second try: any cash journal on remote
+        # 2. Journal — MUST be CASH so action_post goes straight to 'paid'.
+        #    Bank journals stay 'in_process' until manual bank reconciliation.
+        remote_journal_id = self._get_or_create_remote_cash_journal(config)
         if not remote_journal_id:
-            found = config._call_kw('account.journal', 'search',
-                                    args=[[['type', '=', 'cash']], 0, 1])
-            remote_journal_id = found[0] if found else None
-
-        # No cash journal at all → abort with a clear message
-        if not remote_journal_id:
-            _logger.error(
-                "Remote Sync: no CASH journal found on remote for payment %s. "
-                "Please create a cash journal on the remote Odoo so payments reach 'paid' state.",
-                self.name,
-            )
             return False
 
         # 3. Sale order — lookup via mapping
@@ -192,6 +170,42 @@ class AccountPayment(models.Model):
                 self.name, remote_id, remote_state,
             )
         return True
+
+    # ------------------------------------------------------------------
+    # Get or create a Cash journal on the remote (guaranteed to exist)
+    # ------------------------------------------------------------------
+
+    def _get_or_create_remote_cash_journal(self, config):
+        """Return an existing Cash journal id on remote, or create one if absent."""
+        # 1. Try to match local journal name + cash type
+        if self.journal_id:
+            found = config._call_kw('account.journal', 'search',
+                                    args=[[['name', 'ilike', self.journal_id.name],
+                                           ['type', '=', 'cash']], 0, 1])
+            if found:
+                return found[0]
+
+        # 2. Any cash journal on remote
+        found = config._call_kw('account.journal', 'search',
+                                args=[[['type', '=', 'cash']], 0, 1])
+        if found:
+            return found[0]
+
+        # 3. No cash journal exists → create one automatically
+        _logger.warning(
+            "Remote Sync: no Cash journal on remote — creating 'MS Cash Sync' journal."
+        )
+        journal_id = config._call_kw('account.journal', 'create', args=[{
+            'name': 'MS Cash Sync',
+            'type': 'cash',
+            'code': 'MSCSH',
+        }])
+        if journal_id:
+            _logger.info("Remote Sync: created Cash journal id=%s on remote.", journal_id)
+            return journal_id
+
+        _logger.error("Remote Sync: FAILED to create Cash journal on remote.")
+        return None
 
     # ------------------------------------------------------------------
     # Force remote payment to 'paid' — multi-strategy
